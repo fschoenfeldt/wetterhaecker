@@ -16,3 +16,8 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+## Get Weather for Hamburg
+
+```bash
+Wetterhaecker.Brightsky.Operations.get_current_weather(lat: 53.551086, lon: 9.993682)
+```
