@@ -79,10 +79,10 @@ config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
 config :oapi_generator,
-  default: [
+  brightsky: [
     output: [
       base_module: Wetterhaecker.Brightsky,
-      location: "lib/brightsky",
+      location: "lib/wetterhaecker/brightsky",
       operation_subdirectory: "operations/",
       schema_subdirectory: "schemas/"
     ]

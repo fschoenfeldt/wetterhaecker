@@ -1,0 +1,52 @@
+# Wetterhaecker
+
+```elixir
+Mix.install(
+  [
+    {:wetterhaecker, path: Path.join(__DIR__, ".."), env: :dev},
+    {:kino, "~> 0.15.0"}
+  ],
+  config_path: :wetterhaecker,
+  lockfile: :wetterhaecker
+)
+```
+
+## Get current weather
+
+```elixir
+form =
+  Kino.Control.form(
+    [
+      lat: Kino.Input.text("lat", default: 53.551086),
+      lon: Kino.Input.text("lon", default: 9.993682),
+    ],
+    submit: "Submit"
+  )
+
+Kino.listen(form, fn %{data: %{lat: lat, lon: lon}} ->
+  Wetterhaecker.Brightsky.Operations.get_current_weather(lat: lat, lon: lon)
+  |> IO.inspect()
+end)
+
+form
+```
+
+```elixir
+# https://hexdocs.pm/kino/Kino.Input.html#file/2-examples
+# [Cell 1]
+
+form = Kino.Control.form([file: Kino.Input.file("File")], submit: "Send")
+
+# [Cell 2]
+
+form
+|> Kino.Control.stream()
+|> Kino.listen(fn event ->
+  event.data.file.file_ref
+  |> Kino.Input.file_path()
+  |> Wetterhaecker.Gpx.parse()
+  |> IO.inspect()
+end)
+
+form
+```
