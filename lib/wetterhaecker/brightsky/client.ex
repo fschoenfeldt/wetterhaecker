@@ -1,5 +1,8 @@
 defmodule Wetterhaecker.Brightsky.Client do
-  @base_url "https://api.brightsky.dev/"
+  # fire up mock with
+  # prism mock priv/static/brightsky_openapi.json
+  defp base_url, do: "http://127.0.0.1:4010/"
+  # defp base_url, do: "https://api.brightsky.dev/"
 
   def request(%{
         method: method,
@@ -9,7 +12,7 @@ defmodule Wetterhaecker.Brightsky.Client do
       }) do
     request = %HTTPoison.Request{
       method: method,
-      url: @base_url <> url,
+      url: base_url() <> url,
       headers: [
         {"Content-Type", "application/json"},
         {"Accept", "application/json"}

@@ -17,7 +17,8 @@ defmodule WetterhaeckerWeb.Router do
   scope "/", WetterhaeckerWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    # get "/", PageController, :home
+    live "/", MapsLive.Index, :index
   end
 
   # Other scopes may use custom stacks.

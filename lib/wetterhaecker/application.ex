@@ -11,14 +11,14 @@ defmodule Wetterhaecker.Application do
       WetterhaeckerWeb.Telemetry,
       Wetterhaecker.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:wetterhaecker, :ecto_repos),
-        skip: skip_migrations?()},
+       repos: Application.fetch_env!(:wetterhaecker, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:wetterhaecker, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Wetterhaecker.PubSub},
       # Start a worker by calling: Wetterhaecker.Worker.start_link(arg)
       # {Wetterhaecker.Worker, arg},
       # Start to serve requests, typically the last entry
-      WetterhaeckerWeb.Endpoint
+      WetterhaeckerWeb.Endpoint,
+      TwMerge.Cache
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

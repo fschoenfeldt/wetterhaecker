@@ -12,7 +12,7 @@ mix setup
 iex -S mix phx.server
 ```
 
-👉🏻 http://localhost:4000
+👉🏻 http://localhost:4000/
 
 ## Start Livebook
 

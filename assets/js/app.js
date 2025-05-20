@@ -35,7 +35,54 @@ let Hooks = {};
 Hooks.Map = {
   mounted() {
     console.log("Map mounted");
+    this.handleEvent("map:init", (payload) => {
+      console.log("Map init", payload);
+
+      const { lat, lon, zoom } = payload.initial;
+      const { points } = payload;
+
+      const map = leaflet.map(this.el).setView([lat, lon], zoom);
+
+      setTitleLayer(map);
+      const polyline = drawPolyline(map, trackpointsToPolyline(points), {
+        color: "red",
+        weight: 5,
+        opacity: 0.7,
+      });
+      map.fitBounds(polyline.getBounds());
+    });
   },
+};
+
+const setTitleLayer = (map) => {
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    // L.tileLayer("http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution:
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    // '&copy; <a href="https://thunderforest.com">OpenCycleMap</a>',
+  }).addTo(map);
+};
+
+const drawPolyline = (
+  map,
+  latlngs,
+  opts = {
+    color: "red",
+  }
+) => {
+  return L.polyline(latlngs, opts).addTo(map);
+};
+
+/**
+ * maps gpx trackpoints to leaflet polylines
+ *
+ * @param {Array} trackpoints
+ */
+const trackpointsToPolyline = (trackpoints) => {
+  return trackpoints.map(({ ele, lat, lon, time }) => {
+    return [lat, lon];
+  });
 };
 
 let liveSocket = new LiveSocket("/live", Socket, {
