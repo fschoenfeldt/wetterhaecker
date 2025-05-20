@@ -87,3 +87,6 @@ config :oapi_generator,
       schema_subdirectory: "schemas/"
     ]
   ]
+
+# Path to install SaladUI components
+config :salad_ui, components_path: Path.join(File.cwd!(), "lib/wetterhaecker_web/components")
