@@ -31,6 +31,8 @@ end)
 form
 ```
 
+## Parse GPX File
+
 ```elixir
 # https://hexdocs.pm/kino/Kino.Input.html#file/2-examples
 # [Cell 1]
@@ -49,4 +51,8 @@ form
 end)
 
 form
+```
+
+```elixir
+Wetterhaecker.Gpx.points("Langeoog.gpx")
 ```

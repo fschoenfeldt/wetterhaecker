@@ -21,3 +21,9 @@ mix escript.install hex livebook
 asdf reshim elixir
 livebook server livebooks/wetterhaecker.livemd
 ```
+
+## Start Brightsky API Mock
+
+```bash
+prism mock priv/static/brightsky_openapi.json
+```

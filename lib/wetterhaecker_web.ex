@@ -90,6 +90,12 @@ defmodule WetterhaeckerWeb do
       # Core UI components
       import WetterhaeckerWeb.CoreComponents
 
+      import WetterhaeckerWeb.Components.{
+        Button,
+        Form,
+        Input
+      }
+
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 

@@ -59,7 +59,8 @@ defmodule Wetterhaecker.MixProject do
       {:oapi_generator, "~> 0.2.0", only: :dev, runtime: false},
       {:httpoison, "~> 2.0"},
       {:gpx_ex, git: "git@github.com:caspg/gpx_ex.git", tag: "0.5.0"},
-      {:salad_ui, "~> 0.14"}
+      {:salad_ui, "~> 0.14"},
+      {:math, "~> 0.6.0"}
     ]
   end
 
