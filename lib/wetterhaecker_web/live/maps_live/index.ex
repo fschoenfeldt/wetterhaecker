@@ -1,5 +1,6 @@
 defmodule WetterhaeckerWeb.MapsLive.Index do
   use WetterhaeckerWeb, :live_view
+  alias Wetterhaecker.Gpx.Utils
 
   defmodule Form do
     @moduledoc """
@@ -89,8 +90,8 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
           </.form_description>
         </.form_item>
         <fieldset class="relative space-y-4 flex pb-12">
-          <%= with route_length = route_length_km(@gpx),
-                   calc_hrs <- estimated_route_time_hours(@gpx, @form) do %>
+          <%= with route_length = Utils.route_length_km(@gpx),
+                   calc_hrs <- Utils.estimated_route_time_hours(@gpx, @form) do %>
             <div class="flex gap-x-4">
               <.form_item>
                 <.form_label>Total Route length (km)</.form_label>
@@ -150,12 +151,12 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     form = socket.assigns.form
     gpx = socket.assigns.gpx
     points = gpx.points
-    estimated_time = estimated_route_time(gpx, form)
+    estimated_time = Utils.estimated_route_time(gpx, form)
     sampling_rate = Phoenix.HTML.Form.input_value(form, :sampling_rate)
 
     sampled_points =
       points
-      |> estimated_time_and_sampling_rate_to_points_with_index(
+      |> Utils.estimated_time_and_sampling_rate_to_points_with_index(
         estimated_time,
         sampling_rate
       )
@@ -170,53 +171,5 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     |> push_event("map:drawUpdate", %{
       pointsWithIndexes: sampled_points
     })
-  end
-
-  def route_length_km(gpx) when is_map(gpx), do: route_length_km(gpx[:total_length])
-
-  def route_length_km(total_length) when is_float(total_length),
-    do: Float.ceil(total_length / 1000, 2)
-
-  def estimated_route_time(gpx, form) when is_map(gpx) and is_map(form),
-    do:
-      estimated_route_time(
-        Map.get(gpx, :total_length, 0),
-        Phoenix.HTML.Form.input_value(form, :average_speed)
-      )
-
-  def estimated_route_time(total_length, average_speed)
-      when is_float(total_length) and is_float(average_speed),
-      do: total_length / 1000 / average_speed * 60
-
-  def estimated_route_time_hours(gpx, form) when is_map(gpx) and is_map(form),
-    do:
-      estimated_route_time_hours(
-        Map.get(gpx, :total_length, 0),
-        Phoenix.HTML.Form.input_value(form, :average_speed)
-      )
-
-  def estimated_route_time_hours(total_length, average_speed)
-      when is_float(total_length) and is_float(average_speed),
-      do: (total_length / 1000 / average_speed) |> Float.ceil(2)
-
-  def estimated_time_and_sampling_rate_to_points_with_index(
-        points,
-        estimated_time,
-        sampling_rate
-      ) do
-    parts_we_need_to_sample = estimated_time / sampling_rate
-
-    take_point_every_n =
-      round(Enum.count(points) / parts_we_need_to_sample)
-
-    points_to_sample =
-      points
-      |> Enum.with_index()
-      |> Enum.filter(fn {%GpxEx.TrackPoint{}, i} ->
-        # always take the first point
-        i == 0 or rem(i, take_point_every_n) == 0
-      end)
-
-    points_to_sample
   end
 end
