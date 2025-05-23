@@ -70,6 +70,9 @@ defmodule WetterhaeckerWeb.Components.Form do
         assigns
       end
 
+    # "for" attribute isn't released in salad_ui yet, but it is already implemented in the main branch:
+    # - https://github.com/bluzky/salad_ui/pull/175
+    # - https://github.com/bluzky/salad_ui/compare/v0.14.7...main#diff-82b2f09435ad83cd7428472e0f84c56128409f7e92c8d4d57ad85c6134af1743R92
     ~H"""
     <SaladUI.Label.label
       class={
@@ -78,6 +81,7 @@ defmodule WetterhaeckerWeb.Components.Form do
           @class
         ])
       }
+      for={@field && @field.id}
       {@rest}
     >
       {render_slot(@inner_block)}

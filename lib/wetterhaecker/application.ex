@@ -5,6 +5,8 @@ defmodule Wetterhaecker.Application do
 
   use Application
 
+  import Wetterhaecker.Encoder
+
   @impl true
   def start(_type, _args) do
     children = [

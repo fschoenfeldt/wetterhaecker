@@ -34,27 +34,51 @@ let Hooks = {};
 
 Hooks.Map = {
   mounted() {
-    console.log("Map mounted");
+    console.debug("Map mounted");
+
+    this.map = null;
     this.handleEvent("map:init", (payload) => {
-      console.log("Map init", payload);
+      console.debug("event: map:init", payload);
 
       const { lat, lon, zoom } = payload.initial;
       const { points } = payload;
 
-      const map = leaflet.map(this.el).setView([lat, lon], zoom);
+      this.map = leaflet.map(this.el).setView([lat, lon], zoom);
 
-      setTitleLayer(map);
-      const polyline = drawPolyline(map, trackpointsToPolyline(points), {
+      setTileLayer(this.map);
+      const polyline = drawPolyline(this.map, trackpointsToPolyline(points), {
         color: "red",
         weight: 5,
         opacity: 0.7,
       });
-      map.fitBounds(polyline.getBounds());
+      this.map.fitBounds(polyline.getBounds());
+    });
+
+    this.handleEvent("map:drawUpdate", (payload) => {
+      console.debug("event: map:drawUpdate", payload);
+      const { pointsWithIndexes } = payload;
+
+      pointsWithIndexes.forEach(({ index: index, point: { lat, lon } }) => {
+        L.marker([lat, lon], {
+          icon: L.divIcon({
+            className: "bg-transparent",
+            iconSize: [48, 48],
+            iconAnchor: [24, 48],
+            html: `<div class="hero-map-pin-solid h-12 w-12 bg-blue-500"><span class="sr-only">${index}</span></div>`,
+          }),
+        })
+          .addTo(this.map)
+          .bindPopup(`Trackpoint ${index}`, {
+            autoClose: false,
+            closeOnClick: false,
+          })
+          .openPopup();
+      });
     });
   },
 };
 
-const setTitleLayer = (map) => {
+const setTileLayer = (map) => {
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     // L.tileLayer("http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -62,6 +86,27 @@ const setTitleLayer = (map) => {
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     // '&copy; <a href="https://thunderforest.com">OpenCycleMap</a>',
   }).addTo(map);
+};
+
+const drawPopup = (
+  map,
+  latlngs,
+  opts = {
+    content: "",
+  }
+) => {
+  return L.popup(latlngs, opts).openOn(map);
+};
+
+const drawCircleMarker = (
+  map,
+  latlng,
+  opts = {
+    color: "blue",
+    radius: 10,
+  }
+) => {
+  return L.circleMarker(latlng, opts).addTo(map);
 };
 
 const drawPolyline = (
@@ -106,8 +151,8 @@ liveSocket.connect();
 window.liveSocket = liveSocket;
 
 // Allows to execute JS commands from the server
-window.addEventListener("phx:js-exec", ({detail}) => {
-  document.querySelectorAll(detail.to).forEach(el => {
-    liveSocket.execJS(el, el.getAttribute(detail.attr))
-  })
-})
+window.addEventListener("phx:js-exec", ({ detail }) => {
+  document.querySelectorAll(detail.to).forEach((el) => {
+    liveSocket.execJS(el, el.getAttribute(detail.attr));
+  });
+});
