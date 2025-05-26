@@ -19,7 +19,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       |> cast(params, [:average_speed, :sampling_rate])
       |> validate_required([:average_speed, :sampling_rate])
       |> validate_number(:average_speed, greater_than: 0)
-      |> validate_number(:sampling_rate, greater_than: 29, less_than: 121)
+      |> validate_number(:sampling_rate, greater_than: 4, less_than: 121)
     end
   end
 
@@ -60,9 +60,13 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="space-y-4">
+    <div class="space-y-4 lg:grid lg:grid-cols-8 lg:gap-4 lg:min-h-screen">
+      <div class="h-full w-full lg:col-span-5">
+        <div id="map" phx-hook="Map" phx-update="ignore" class="h-96 lg:h-screen"></div>
+      </div>
+
       <.form
-        class="space-y-6 p-4 border rounded shadow"
+        class="space-y-6 p-4 border rounded shadow lg:col-span-3"
         for={@form}
         id="map-form"
         phx-change="validate"
@@ -83,7 +87,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         <.form_item>
           <.form_label field={@form[:sampling_rate]}>Sampling Rate (mins)</.form_label>
           <.form_control>
-            <.input type="number" min="30" max="120" phx-debounce="500" field={@form[:sampling_rate]} />
+            <.input type="number" min="5" max="120" phx-debounce="500" field={@form[:sampling_rate]} />
           </.form_control>
           <.form_description>
             The rate at which the weather data is sampled.
@@ -102,6 +106,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
               <.form_item>
                 <.form_label>Estimated time (hrs)</.form_label>
                 <.form_control>
+                  <%!-- # TODO: display as ##h ##mins instead. --%>
                   <.input name="calc_hrs" type="number" value={calc_hrs} disabled />
                 </.form_control>
               </.form_item>
@@ -117,12 +122,6 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
           </.button>
         </div>
       </.form>
-
-      <div>
-        These are the results…
-      </div>
-
-      <div id="map" phx-hook="Map" phx-update="ignore" class="h-96"></div>
     </div>
     """
   end
@@ -141,35 +140,30 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
 
     # TODO: handle error case
     if changeset.valid? do
-      {:noreply, socket |> assign(:form, to_form(changeset)) |> push_map_update()}
+      form = to_form(changeset)
+
+      {:noreply,
+       socket
+       |> assign(:form, form)
+       |> push_event("map:drawUpdate", %{
+         sampledWeatherPoints: sampled_weather_points(form, socket.assigns.gpx) |> IO.inspect()
+       })}
     else
       {:noreply, socket |> put_flash(:error, "Invalid form data")}
     end
   end
 
-  defp push_map_update(socket) do
-    form = socket.assigns.form
-    gpx = socket.assigns.gpx
+  defp sampled_weather_points(form, gpx) do
     points = gpx.points
     estimated_time = Utils.estimated_route_time(gpx, form)
     sampling_rate = Phoenix.HTML.Form.input_value(form, :sampling_rate)
 
-    sampled_points =
-      points
-      |> Utils.estimated_time_and_sampling_rate_to_points_with_index(
-        estimated_time,
-        sampling_rate
-      )
-      |> Enum.map(fn {point, index} ->
-        %{
-          point: point,
-          index: index
-        }
-      end)
-
-    socket
-    |> push_event("map:drawUpdate", %{
-      pointsWithIndexes: sampled_points
-    })
+    points
+    |> Utils.sample_weather_points(
+      estimated_time,
+      sampling_rate
+    )
+    # TODO: put custom date here :-)
+    |> Utils.add_weather_data()
   end
 end

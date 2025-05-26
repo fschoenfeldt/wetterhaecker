@@ -11,7 +11,9 @@ Mix.install(
 )
 ```
 
-## Get current weather
+## Weather
+
+Get current weather for Hamburg:
 
 ```elixir
 form =
@@ -31,7 +33,32 @@ end)
 form
 ```
 
-## Parse GPX File
+Based on a gpx-file and sampling rate, get weather per point:
+
+```elixir
+alias Wetterhaecker.Gpx.Utils
+{:ok, gpx} = Wetterhaecker.Gpx.get()
+
+sampling_rate = 60
+estimated_time = 240
+
+gpx.points
+|> Utils.sample_weather_points(
+  estimated_time,
+  sampling_rate
+)
+|> Utils.add_weather_data()
+```
+
+## GPX
+
+Parse preset "Langeoog" route file:
+
+```elixir
+Wetterhaecker.Gpx.points("Langeoog.gpx")
+```
+
+Parse any gpx file:
 
 ```elixir
 # https://hexdocs.pm/kino/Kino.Input.html#file/2-examples
@@ -51,8 +78,4 @@ form
 end)
 
 form
-```
-
-```elixir
-Wetterhaecker.Gpx.points("Langeoog.gpx")
 ```

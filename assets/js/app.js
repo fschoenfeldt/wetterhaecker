@@ -37,6 +37,8 @@ Hooks.Map = {
     console.debug("Map mounted");
 
     this.map = null;
+    this.sampledWeatherPoints = [];
+
     this.handleEvent("map:init", (payload) => {
       console.debug("event: map:init", payload);
 
@@ -56,26 +58,95 @@ Hooks.Map = {
 
     this.handleEvent("map:drawUpdate", (payload) => {
       console.debug("event: map:drawUpdate", payload);
-      const { pointsWithIndexes } = payload;
+      const { sampledWeatherPoints } = payload;
+      console.debug("sampledWeatherPoints", sampledWeatherPoints);
 
-      pointsWithIndexes.forEach(({ index: index, point: { lat, lon } }) => {
-        L.marker([lat, lon], {
-          icon: L.divIcon({
-            className: "bg-transparent",
-            iconSize: [48, 48],
-            iconAnchor: [24, 48],
-            html: `<div class="hero-map-pin-solid h-12 w-12 bg-blue-500"><span class="sr-only">${index}</span></div>`,
-          }),
-        })
-          .addTo(this.map)
-          .bindPopup(`Trackpoint ${index}`, {
-            autoClose: false,
-            closeOnClick: false,
+      clearPreviousSampledWeatherPoints(this);
+      this.sampledWeatherPoints = sampledWeatherPoints.map(
+        ({ index: index, point: { lat, lon }, weather: { weather } }) => {
+          return L.marker([lat, lon], {
+            icon: L.divIcon({
+              className: "bg-transparent",
+              iconSize: [48, 48],
+              iconAnchor: [24, 48],
+              html: `<div class="hero-map-pin-solid h-12 w-12 bg-blue-500"><span class="sr-only">${index}</span></div>`,
+            }),
           })
-          .openPopup();
-      });
+            .addTo(this.map)
+            .bindPopup(
+              weather
+                ? `
+              <div class="space-y-1">
+                <div class="flex gap-x-4 items-center text-xl">
+                  ${weatherIcon(weather.icon)}
+                  ${weather.temperature}°C
+                </div>
+                <ul>
+                  <li>${weather.precipitation_probability}% chance of rain</li>
+                  <li>${weather.wind_speed} m/s wind speed</li>
+                  <li>${weather.cloud_cover}% cloud cover</li>
+                </ul>
+              </div>
+              `
+                : `No weather data available for this point`,
+              {
+                autoClose: false,
+                closeOnClick: false,
+              }
+            )
+            .openPopup();
+        }
+      );
     });
   },
+};
+
+/**
+ * returns html string with weather icon based on the icon code,
+ * see: https://brightsky.dev/docs/#/operations/getWeather#response-body
+ *
+ * // TODO: there are many icons missing in this switch statement
+ *
+ * @param {String} icon
+ * @returns html string with icon
+ */
+const weatherIcon = (icon) => {
+  let iconClass;
+
+  switch (icon) {
+    case "clear-day":
+      iconClass = "hero-sun-solid";
+      break;
+    case "clear-night":
+      iconClass = "hero-moon-solid";
+      break;
+    case "partly-cloudy-day":
+    case "partly-cloudy-night":
+    case "cloudy":
+    case "fog":
+    case "wind":
+      iconClass = "hero-cloud-solid";
+      break;
+    case "rain":
+    case "snow":
+    case "hail":
+    case "thunderstorm":
+      iconClass = "hero-cloud-arrow-down-solid";
+      break;
+    default:
+      iconClass = "hero-question-mark-circle-solid";
+  }
+
+  return `<div class="${iconClass} h-8 w-8 bg-gray-500"><span class="sr-only">${icon}</span></div>`;
+};
+
+const clearPreviousSampledWeatherPoints = (that) => {
+  // Remove previous sampled weather points from the map
+  that.sampledWeatherPoints.forEach((marker) => {
+    that.map.removeLayer(marker);
+  });
+  that.sampledWeatherPoints = [];
+  console.debug("cleared sampledWeatherPoints", that.sampledWeatherPoints);
 };
 
 const setTileLayer = (map) => {
