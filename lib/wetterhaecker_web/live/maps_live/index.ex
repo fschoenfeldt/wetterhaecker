@@ -146,24 +146,29 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
        socket
        |> assign(:form, form)
        |> push_event("map:drawUpdate", %{
-         sampledWeatherPoints: sampled_weather_points(form, socket.assigns.gpx) |> IO.inspect()
+         points: add_time_and_weather(form, socket.assigns.gpx)
        })}
     else
       {:noreply, socket |> put_flash(:error, "Invalid form data")}
     end
   end
 
-  defp sampled_weather_points(form, gpx) do
+  defp add_time_and_weather(form, gpx) do
     points = gpx.points
     estimated_time = Utils.estimated_route_time(gpx, form)
     sampling_rate = Phoenix.HTML.Form.input_value(form, :sampling_rate)
 
     points
+    |> Utils.wrap_with_index()
+    |> Utils.update_points_time(
+      estimated_time,
+      # TODO: use the start date from the form
+      DateTime.utc_now()
+    )
     |> Utils.sample_weather_points(
       estimated_time,
       sampling_rate
     )
-    # TODO: put custom date here :-)
     |> Utils.add_weather_data()
   end
 end

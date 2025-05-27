@@ -37,7 +37,7 @@ Hooks.Map = {
     console.debug("Map mounted");
 
     this.map = null;
-    this.sampledWeatherPoints = [];
+    this.weatherMarkers = [];
 
     this.handleEvent("map:init", (payload) => {
       console.debug("event: map:init", payload);
@@ -58,47 +58,71 @@ Hooks.Map = {
 
     this.handleEvent("map:drawUpdate", (payload) => {
       console.debug("event: map:drawUpdate", payload);
-      const { sampledWeatherPoints } = payload;
-      console.debug("sampledWeatherPoints", sampledWeatherPoints);
+      const { points } = payload;
+      const weatherPoints = points.filter((point) => point["weather_point?"]);
+      console.debug("weatherPoints", weatherPoints);
 
-      clearPreviousSampledWeatherPoints(this);
-      this.sampledWeatherPoints = sampledWeatherPoints.map(
-        ({ index: index, point: { lat, lon }, weather: { weather } }) => {
-          return L.marker([lat, lon], {
-            icon: L.divIcon({
-              className: "bg-transparent",
-              iconSize: [48, 48],
-              iconAnchor: [24, 48],
-              html: `<div class="hero-map-pin-solid h-12 w-12 bg-blue-500"><span class="sr-only">${index}</span></div>`,
-            }),
-          })
-            .addTo(this.map)
-            .bindPopup(
-              weather
-                ? `
+      clearPreviousWeatherMarkers(this);
+
+      this.weatherMarkers = weatherMarkers(weatherPoints);
+      this.weatherMarkers.forEach((marker) => marker.addTo(this.map));
+      this.weatherMarkers[0].openPopup();
+    });
+  },
+};
+
+const weatherMarkers = (weatherPoints) => {
+  return weatherPoints.map(weatherMarker);
+};
+
+const weatherMarker = ({
+  index: index,
+  point: { lat, lon },
+  weather: { weather },
+  date: date,
+}) => {
+  const weatherDate = new Date(date);
+
+  // format time with DD:MM:YYYY HH:mm
+  const formattedDate = weatherDate.toLocaleDateString([], {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const formattedTime = weatherDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: "bg-transparent",
+      iconSize: [48, 48],
+      iconAnchor: [24, 48],
+      html: `<div class="hero-map-pin-solid h-12 w-12 bg-blue-500"><span class="sr-only">${index}</span></div>`,
+    }),
+  }).bindPopup(
+    weather
+      ? `
               <div class="space-y-1">
                 <div class="flex gap-x-4 items-center text-xl">
                   ${weatherIcon(weather.icon)}
                   ${weather.temperature}°C
                 </div>
                 <ul>
+                  <li class="text-sm text-gray-500">${formattedDate} ${formattedTime}</li>
                   <li>${weather.precipitation_probability}% chance of rain</li>
                   <li>${weather.wind_speed} m/s wind speed</li>
                   <li>${weather.cloud_cover}% cloud cover</li>
                 </ul>
               </div>
               `
-                : `No weather data available for this point`,
-              {
-                autoClose: false,
-                closeOnClick: false,
-              }
-            )
-            .openPopup();
-        }
-      );
-    });
-  },
+      : `No weather data available for this point`,
+    {
+      autoClose: false,
+      closeOnClick: false,
+    }
+  );
 };
 
 /**
@@ -140,13 +164,13 @@ const weatherIcon = (icon) => {
   return `<div class="${iconClass} h-8 w-8 bg-gray-500"><span class="sr-only">${icon}</span></div>`;
 };
 
-const clearPreviousSampledWeatherPoints = (that) => {
+const clearPreviousWeatherMarkers = (that) => {
   // Remove previous sampled weather points from the map
-  that.sampledWeatherPoints.forEach((marker) => {
+  that.weatherMarkers.forEach((marker) => {
     that.map.removeLayer(marker);
   });
-  that.sampledWeatherPoints = [];
-  console.debug("cleared sampledWeatherPoints", that.sampledWeatherPoints);
+  that.weatherMarkers = [];
+  console.debug("cleared weatherMarkers", that.weatherMarkers);
 };
 
 const setTileLayer = (map) => {

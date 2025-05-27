@@ -1,5 +1,4 @@
 defmodule Wetterhaecker.Gpx.Utils do
-  alias GpxEx.Gpx
   def route_length_km(gpx) when is_map(gpx), do: route_length_km(gpx[:total_length])
 
   def route_length_km(total_length) when is_float(total_length),
@@ -28,51 +27,104 @@ defmodule Wetterhaecker.Gpx.Utils do
       when is_float(total_length) and is_float(average_speed),
       do: (total_length / 1000 / average_speed) |> Float.ceil(2)
 
-  def sample_weather_points(
-        points,
-        estimated_time,
-        sampling_rate
-      ) do
-    parts_we_need_to_sample = estimated_time / sampling_rate
-
-    take_point_every_n =
-      round(Enum.count(points) / parts_we_need_to_sample)
-
-    points_to_sample =
-      points
-      |> Enum.with_index()
-      |> Enum.filter(fn {%GpxEx.TrackPoint{}, i} ->
-        # always take the first point
-        i == 0 or rem(i, take_point_every_n) == 0
-      end)
-      |> Enum.map(fn {%GpxEx.TrackPoint{} = point, index} ->
-        %{
-          point: point,
-          index: index
-        }
-      end)
-
-    points_to_sample
-  end
-
-  def add_weather_data(
-        sampled_weather_points,
-        start_date \\ DateTime.utc_now()
-      )
-      when is_list(sampled_weather_points) do
-    sampled_weather_points
-    |> Enum.map(fn %{point: %GpxEx.TrackPoint{} = point} = sampled_point ->
-      # TODO: calculate the date based on the points index, the sampling rate
-      #       the estimated route time and the start_date.
-      date = DateTime.utc_now()
-      Map.put(sampled_point, :weather, weather_for_point(point, date))
+  def wrap_with_index(points) when is_list(points) do
+    points
+    |> Enum.with_index()
+    |> Enum.map(fn {%GpxEx.TrackPoint{} = point, index} ->
+      %{
+        point: point,
+        index: index
+      }
     end)
   end
 
-  defp weather_for_point(
-         %GpxEx.TrackPoint{lat: lat, lon: lon},
-         date
+  def sample_weather_points(
+        points_with_indexes,
+        estimated_time,
+        sampling_rate
+      )
+      when is_list(points_with_indexes) do
+    parts_we_need_to_sample = estimated_time / sampling_rate
+
+    total_points_count = Enum.count(points_with_indexes)
+
+    if total_points_count <= 1 do
+      # if we only have one point, we just return the points as is to prevent
+      # division by zero errors
+      points_with_indexes
+    else
+      take_point_every_n =
+        round((total_points_count - 1) / parts_we_need_to_sample)
+
+      Enum.map(points_with_indexes, fn %{point: %GpxEx.TrackPoint{}, index: index} =
+                                         point_with_index ->
+        # always take the first point
+        Map.put(
+          point_with_index,
+          :weather_point?,
+          index == 0 or rem(index, take_point_every_n) == 0
+        )
+      end)
+    end
+  end
+
+  def add_weather_data(points) do
+    points
+    |> Enum.map(fn %{point: %GpxEx.TrackPoint{}, weather_point?: weather_point?} = sampled_point ->
+      weather =
+        if weather_point? do
+          weather_for_point(sampled_point)
+        else
+          nil
+        end
+
+      Map.put(sampled_point, :weather, weather)
+    end)
+  end
+
+  def update_points_time(
+        points_with_indexes,
+        estimated_time,
+        start_date
+      )
+      when is_list(points_with_indexes) and
+             is_struct(start_date, DateTime) do
+    points_with_indexes
+    |> Enum.map(fn point_with_index ->
+      date = date_for_point(point_with_index, points_with_indexes, start_date, estimated_time)
+
+      Map.put(point_with_index, :date, date)
+    end)
+  end
+
+  defp date_for_point(
+         %{point: %GpxEx.TrackPoint{}, index: index},
+         points,
+         start_date,
+         estimated_time
        ) do
+    total_points_count = Enum.count(points)
+
+    if total_points_count <= 1 do
+      # if we only have one point, we just return the start date to prevent
+      # division by zero errors
+      start_date
+    else
+      interval_seconds = estimated_time * 60 / (total_points_count - 1)
+
+      # calculate the date based on the index of the point and the sampling rate
+      DateTime.add(
+        start_date,
+        round(index * interval_seconds),
+        :second
+      )
+    end
+  end
+
+  defp weather_for_point(%{
+         point: %GpxEx.TrackPoint{lat: lat, lon: lon},
+         date: date
+       }) do
     opts = [
       date: date,
       lat: lat,
