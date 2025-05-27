@@ -46,13 +46,24 @@ Hooks.Map = {
       const { points } = payload;
 
       this.map = leaflet.map(this.el).setView([lat, lon], zoom);
-
       setTileLayer(this.map);
+
+      // draw a polyline for the trackpoints
       const polyline = drawPolyline(this.map, trackpointsToPolyline(points), {
-        color: "red",
-        weight: 5,
-        opacity: 0.7,
+        color: "#146eff",
+        weight: 4,
+        opacity: 1,
       });
+
+      // TODO: every now and then, display an arrow marker on the polyline
+      //       to indicate the direction of the track
+
+      // draw a circle for the start and end point
+      const startPoint = points[0];
+      const endPoint = points[points.length - 1];
+      drawCircleMarker(this.map, [startPoint.lat, startPoint.lon]);
+      drawCircleMarker(this.map, [endPoint.lat, endPoint.lon]);
+
       this.map.fitBounds(polyline.getBounds());
     });
 
