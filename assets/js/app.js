@@ -39,6 +39,7 @@ Hooks.Map = {
 
     this.map = null;
     this.chart = null;
+    this.route = null;
     this.weatherMarkers = [];
 
     this.handleEvent("map:init", (payload) => {
@@ -50,27 +51,24 @@ Hooks.Map = {
       this.map = leaflet.map(this.el).setView([lat, lon], zoom);
       setTileLayer(this.map);
 
-      // draw a polyline for the trackpoints
-      const polyline = drawPolyline(this.map, trackpointsToPolyline(points), {
-        color: "#146eff",
-        weight: 4,
-        opacity: 1,
-      });
-
-      // TODO: every now and then, display an arrow marker on the polyline
-      //       to indicate the direction of the track
-
-      // draw a circle for the start and end point
-      const startPoint = points[0];
-      const endPoint = points[points.length - 1];
-      drawCircleMarker(this.map, [startPoint.lat, startPoint.lon]);
-      drawCircleMarker(this.map, [endPoint.lat, endPoint.lon]);
-
-      this.map.fitBounds(polyline.getBounds());
+      this.route = drawRoute(this.map, points);
+      this.map.fitBounds(this.route.routePolyline.getBounds());
     });
 
-    this.handleEvent("map:drawUpdate", (payload) => {
-      console.debug("event: map:drawUpdate", payload);
+    this.handleEvent("map:drawGpxFileUpdate", (payload) => {
+      console.debug("event: map:drawGpxFileUpdate", payload);
+      const { points } = payload;
+
+      // clear previous route
+      clearPreviousRoute(this);
+
+      // draw new route
+      this.route = drawRoute(this.map, points);
+      this.map.fitBounds(this.route.routePolyline.getBounds());
+    });
+
+    this.handleEvent("map:drawWeatherUpdate", (payload) => {
+      console.debug("event: map:drawWeatherUpdate", payload);
       const { points } = payload;
       const weatherPoints = points.filter((point) => point["weather_point?"]);
       console.debug("weatherPoints", weatherPoints);
@@ -373,6 +371,41 @@ const drawCircleMarker = (
   }
 ) => {
   return L.circleMarker(latlng, opts).addTo(map);
+};
+
+const clearPreviousRoute = (that) => {
+  // Remove previous route from the map
+  if (that.route) {
+    that.map.removeLayer(that.route.routePolyline);
+    that.map.removeLayer(that.route.startMarker);
+    that.map.removeLayer(that.route.endMarker);
+    that.route = null;
+    console.debug("cleared previous route");
+  }
+};
+
+const drawRoute = (map, points) => {
+  // draw a polyline for the trackpoints
+  const polyline = drawPolyline(map, trackpointsToPolyline(points), {
+    color: "#146eff",
+    weight: 4,
+    opacity: 1,
+  });
+
+  // TODO: every now and then, display an arrow marker on the polyline
+  //       to indicate the direction of the track
+
+  // draw a circle for the start and end point
+  const startPoint = points[0];
+  const endPoint = points[points.length - 1];
+  const startMarker = drawCircleMarker(map, [startPoint.lat, startPoint.lon]);
+  const endMarker = drawCircleMarker(map, [endPoint.lat, endPoint.lon]);
+
+  return {
+    routePolyline: polyline,
+    startMarker,
+    endMarker,
+  };
 };
 
 const drawPolyline = (

@@ -33,11 +33,11 @@ end)
 form
 ```
 
-Based on a gpx-file and sampling rate, get weather per point:
+Based on a preset gpx-file and sampling rate, get weather per point:
 
 ```elixir
 alias Wetterhaecker.Gpx.Utils
-{:ok, gpx} = Wetterhaecker.Gpx.get()
+{:ok, gpx} = Wetterhaecker.Gpx.get_from_preset()
 
 sampling_rate = 60
 estimated_time = 240

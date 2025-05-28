@@ -31,7 +31,8 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         "sampling_rate" => 60
       })
 
-    {:ok, gpx} = Wetterhaecker.Gpx.get("Langeoog.gpx")
+    # initially we use a preset GPX file
+    {:ok, gpx} = Wetterhaecker.Gpx.get_from_preset()
 
     socket =
       socket
@@ -39,6 +40,10 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       |> assign(
         :form,
         to_form(changeset)
+      )
+      |> allow_upload(:gpx_file,
+        accept: ~w(.gpx),
+        max_entries: 1
       )
 
     if connected?(socket) do
@@ -79,6 +84,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         id="map-form"
         phx-change="validate"
         phx-submit="save"
+        multipart
       >
         <h1 class="text-2xl">Wetterhaecker</h1>
         <.form_item>
@@ -101,6 +107,19 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
             The rate at which the weather data is sampled.
           </.form_description>
         </.form_item>
+        <.form_item>
+          <%!-- # TODO: the label doesnt work. --%>
+          <.form_label field={@form[:gpx_file]}>GPX File</.form_label>
+          <.form_control>
+            <div>
+              <.live_file_input upload={@uploads.gpx_file} />
+            </div>
+          </.form_control>
+          <.form_description>
+            Upload a custom GPX file to visualize the route on the map.
+          </.form_description>
+        </.form_item>
+        <hr />
         <fieldset class="relative space-y-4 flex pb-12">
           <%= with route_length = Utils.route_length_km(@gpx),
                    calc_hrs <- Utils.estimated_route_time_hours(@gpx, @form) do %>
@@ -119,7 +138,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
                 </.form_control>
               </.form_item>
             </div>
-            <legend class="absolute bottom-0 block text-sm text-gray-500">
+            <legend class="absolute bottom-0 block text-sm text-gray-800">
               These values are calculated based on the GPX file and the given average speed.
             </legend>
           <% end %>
@@ -143,22 +162,54 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
 
   @impl true
   def handle_event("save", %{"form" => form_params}, socket) do
+    IO.inspect(form_params, label: "save")
+
     changeset =
-      Form.changeset(%Form{}, form_params)
+      Form.changeset(%Form{}, form_params) |> IO.inspect(label: "changeset")
 
-    # TODO: handle error case
-    if changeset.valid? do
-      form = to_form(changeset)
+    socket =
+      if changeset.valid? do
+        form = to_form(changeset)
 
-      {:noreply,
-       socket
-       |> assign(:form, form)
-       |> push_event("map:drawUpdate", %{
-         points: add_time_and_weather(form, socket.assigns.gpx)
-       })}
-    else
-      {:noreply, socket |> put_flash(:error, "Invalid form data")}
-    end
+        socket
+        |> assign(:form, form)
+      else
+        socket |> put_flash(:error, "Invalid form data")
+      end
+
+    maybe_gpx_file = consume_gpx_upload(socket)
+
+    socket =
+      case maybe_gpx_file do
+        {:ok, gpx} ->
+          socket |> assign(:gpx, gpx)
+
+        # no GPX file uploaded
+        nil ->
+          socket
+
+        {:error, reason} ->
+          socket |> put_flash(:error, "Failed to process GPX file: #{reason}")
+      end
+
+    socket =
+      socket
+      |> push_event("map:drawGpxFileUpdate", %{
+        points: socket.assigns.gpx.points
+      })
+      |> push_event("map:drawWeatherUpdate", %{
+        points: add_time_and_weather(socket.assigns.form, socket.assigns.gpx)
+      })
+
+    {:noreply, socket}
+  end
+
+  defp consume_gpx_upload(socket) do
+    socket
+    |> consume_uploaded_entries(:gpx_file, fn %{path: path}, _entry ->
+      {:ok, Wetterhaecker.Gpx.get_from_path(path)}
+    end)
+    |> List.first()
   end
 
   defp add_time_and_weather(form, gpx) do

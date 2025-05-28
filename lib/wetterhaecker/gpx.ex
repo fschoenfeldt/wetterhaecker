@@ -9,11 +9,17 @@ defmodule Wetterhaecker.Gpx do
     TrackSegment
   }
 
-  def get(file_name \\ "Langeoog.gpx") do
-    with {:ok, _gpx} = parse_result <-
-           [:code.priv_dir(:wetterhaecker), "static", "gpx", file_name]
-           |> Path.join()
-           |> parse_gpx(),
+  @doc """
+  Reads a preset GPX file from the `priv/static/gpx` directory and returns the points and total length.
+  """
+  def get_from_preset(preset_file_name \\ "Langeoog.gpx") do
+    [:code.priv_dir(:wetterhaecker), "static", "gpx", preset_file_name]
+    |> Path.join()
+    |> get_from_path()
+  end
+
+  def get_from_path(file_path) when is_binary(file_path) do
+    with {:ok, _gpx} = parse_result <- parse_gpx(file_path),
          {:ok, points} = extract_points(parse_result) do
       total_length = calculate_total_length(points)
 
