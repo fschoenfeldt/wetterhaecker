@@ -21,6 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "../vendor/topbar";
+import Highcharts from "highcharts";
 
 import leaflet from "leaflet";
 
@@ -37,6 +38,7 @@ Hooks.Map = {
     console.debug("Map mounted");
 
     this.map = null;
+    this.chart = null;
     this.weatherMarkers = [];
 
     this.handleEvent("map:init", (payload) => {
@@ -78,6 +80,157 @@ Hooks.Map = {
       this.weatherMarkers = weatherMarkers(weatherPoints);
       this.weatherMarkers.forEach((marker) => marker.addTo(this.map));
       this.weatherMarkers[0].openPopup();
+
+      // graph init
+      this.chart = Highcharts.chart("chart", {
+        chart: {
+          type: "line",
+        },
+        title: {
+          text: `Temperature forecast, starting at ${new Date(
+            weatherPoints[0].date
+          ).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`,
+        },
+        xAxis: {
+          categories: weatherPoints.map((point) => {
+            const date = new Date(point.date);
+
+            // format time with HH:MM
+            return date.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          }),
+        },
+        yAxis: [
+          {
+            // Primary yAxis
+            title: { text: "Temperature (°C)" },
+          },
+          {
+            // Secondary yAxis
+            title: { text: "Precipitation Probability (%)" },
+            min: 0,
+            max: 100,
+            opposite: true,
+          },
+          {
+            // third axis for precipitation amount
+            title: { text: "Precipitation Amount (mm)" },
+            min: 0,
+            // opposite: true,
+          },
+          {
+            // Fourth yAxis for wind speed
+            title: { text: "Wind Speed (m/s)" },
+            min: 0,
+            opposite: true,
+          },
+        ],
+        plotOptions: {
+          line: {
+            dataLabels: {
+              enabled: true,
+            },
+            enableMouseTracking: false,
+          },
+        },
+        series: [
+          {
+            name: "Route Temperature (°C)",
+            type: "spline",
+            color: "#ff5733",
+            data: weatherPoints.map((point) => {
+              return point?.weather?.weather?.temperature
+                ? point.weather.weather.temperature
+                : null;
+            }),
+          },
+          {
+            name: "Precipitation Probability (%)",
+            type: "column",
+            color: "rgba(0, 123, 255, 0.3)",
+            data: weatherPoints.map((point) => {
+              return point?.weather?.weather?.precipitation_probability
+                ? point.weather.weather.precipitation_probability
+                : null;
+            }),
+            yAxis: 1,
+          },
+          {
+            name: "Precipitation Amount (mm)",
+            color: "rgba(0, 123, 255, 0.7)",
+            type: "column",
+            data: weatherPoints.map((point) => {
+              return point?.weather?.weather?.precipitation
+                ? point.weather.weather.precipitation
+                : null;
+            }),
+            yAxis: 2,
+          },
+          {
+            name: "Wind Speed (m/s)",
+            type: "spline",
+            color: "#28a745",
+            data: weatherPoints.map((point) => {
+              return point?.weather?.weather?.wind_speed
+                ? point.weather.weather.wind_speed
+                : null;
+            }),
+            yAxis: 3,
+            visible: false,
+          },
+        ],
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 500, // z.B. für Smartphones
+              },
+              chartOptions: {
+                xAxis: {
+                  labels: {
+                    style: {
+                      fontSize: "10px",
+                    },
+                    rotation: -45, // optional: Labels schräg stellen
+                  },
+                  title: { text: null }, // Achsentitel ausblenden
+                },
+                yAxis: [
+                  {
+                    // Temperatur
+                    title: { text: null },
+                    labels: { style: { fontSize: "10px" } },
+                  },
+                  {
+                    // Niederschlagswahrscheinlichkeit
+                    title: { text: null },
+                    labels: { style: { fontSize: "10px" } },
+                  },
+                  {
+                    // Niederschlagsmenge
+                    title: { text: null },
+                    labels: { style: { fontSize: "10px" } },
+                  },
+                  {
+                    // Wind
+                    title: { text: null },
+                    labels: { style: { fontSize: "10px" } },
+                  },
+                ],
+                legend: {
+                  layout: "vertical",
+                  // enabled: false, // optional: Legende ausblenden
+                },
+              },
+            },
+          ],
+        },
+      });
     });
   },
 };

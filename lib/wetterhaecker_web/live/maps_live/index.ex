@@ -62,7 +62,15 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     ~H"""
     <div class="space-y-4 lg:grid lg:grid-cols-8 lg:gap-4 lg:min-h-screen">
       <div class="h-full w-full lg:col-span-5">
-        <div id="map" phx-hook="Map" phx-update="ignore" class="h-96 lg:h-screen"></div>
+        <div id="map" phx-hook="Map" phx-update="ignore" class="h-[50vh] lg:h-[calc(100vh-16rem)]">
+        </div>
+        <div id="chart" class="h-[50vh] lg:h-64 p-2">
+          <div class="flex items-center justify-center h-full bg-gray-50">
+            <p class="text-center text-gray-500">
+              Weather data will be displayed here after you submit the form.
+            </p>
+          </div>
+        </div>
       </div>
 
       <.form
