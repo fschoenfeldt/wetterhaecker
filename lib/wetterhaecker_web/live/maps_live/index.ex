@@ -12,11 +12,13 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     embedded_schema do
       field :average_speed, :float
       field :sampling_rate, :integer
+      field :start_date_time, :utc_datetime
     end
 
     def changeset(form, params \\ %{}) do
       form
-      |> cast(params, [:average_speed, :sampling_rate])
+      |> cast(params, [:average_speed, :sampling_rate, :start_date_time])
+      |> validate_required([:start_date_time])
       |> validate_required([:average_speed, :sampling_rate])
       |> validate_number(:average_speed, greater_than: 0)
       |> validate_number(:sampling_rate, greater_than: 4, less_than: 121)
@@ -28,7 +30,8 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     changeset =
       Form.changeset(%Form{}, %{
         "average_speed" => 20.0,
-        "sampling_rate" => 60
+        "sampling_rate" => 60,
+        "start_date_time" => DateTime.utc_now() |> DateTime.add(2, :hour) |> date_time_to_input()
       })
 
     # initially we use a preset GPX file
@@ -88,11 +91,22 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       >
         <h1 class="text-2xl">Wetterhaecker</h1>
         <.form_item>
+          <.form_label field={@form[:start_date_time]}>
+            Start Date/Time
+          </.form_label>
+          <.form_control>
+            <.input type="datetime-local" field={@form[:start_date_time]} required />
+          </.form_control>
+          <.form_description>
+            The date and time when you start your route, timezone is MESZ (+02:00).
+          </.form_description>
+        </.form_item>
+        <.form_item>
           <.form_label field={@form[:average_speed]}>
             Average Speed (km/h)
           </.form_label>
           <.form_control>
-            <.input type="number" phx-debounce="500" field={@form[:average_speed]} />
+            <.input type="number" phx-debounce="500" field={@form[:average_speed]} required />
           </.form_control>
           <.form_description>
             Average speed you expect to travel.
@@ -101,7 +115,14 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         <.form_item>
           <.form_label field={@form[:sampling_rate]}>Sampling Rate (mins)</.form_label>
           <.form_control>
-            <.input type="number" min="5" max="120" phx-debounce="500" field={@form[:sampling_rate]} />
+            <.input
+              type="number"
+              min="5"
+              max="120"
+              phx-debounce="500"
+              field={@form[:sampling_rate]}
+              required
+            />
           </.form_control>
           <.form_description>
             The rate at which the weather data is sampled.
@@ -217,12 +238,16 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     estimated_time = Utils.estimated_route_time(gpx, form)
     sampling_rate = Phoenix.HTML.Form.input_value(form, :sampling_rate)
 
+    start_date_time =
+      form
+      |> Phoenix.HTML.Form.input_value(:start_date_time)
+      |> dbg
+
     points
     |> Utils.wrap_with_index()
     |> Utils.update_points_time(
       estimated_time,
-      # TODO: use the start date from the form
-      DateTime.utc_now()
+      start_date_time
     )
     |> Utils.sample_weather_points(
       estimated_time,

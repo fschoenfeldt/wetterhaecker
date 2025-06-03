@@ -96,19 +96,21 @@ const drawHighChart = ({ el = "chart", weatherPoints }) => {
     title: {
       text: `Temperature forecast, starting at ${new Date(
         weatherPoints[0].date
-      ).toLocaleTimeString([], {
+      ).toLocaleTimeString("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "UTC",
       })}`,
     },
     xAxis: {
       categories: weatherPoints.map((point) => {
+        // Assume point.date is in MESZ (+02:00)
         const date = new Date(point.date);
 
-        // format time with HH:MM
-        return date.toLocaleTimeString([], {
+        return date.toLocaleTimeString("de-DE", {
           hour: "2-digit",
           minute: "2-digit",
+          timeZone: "UTC",
         });
       }),
     },

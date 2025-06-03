@@ -31,7 +31,7 @@ defmodule WetterhaeckerWeb.Components.Input do
                 multiple pattern placeholder readonly required rows size step)
 
   def input(assigns) do
-    assigns = prepare_assign(assigns)
+    assigns = assigns |> prepare_assign() |> normalize_value()
 
     rest =
       Map.merge(assigns.rest, Map.take(assigns, [:id, :name, :value, :type]))
@@ -49,5 +49,31 @@ defmodule WetterhaeckerWeb.Components.Input do
       {@rest}
     />
     """
+  end
+
+  defp normalize_value(%{type: type, value: value} = assigns) do
+    case type do
+      "datetime-local" ->
+        Map.put(assigns, :value, date_time_to_input(value))
+
+      _ ->
+        assigns
+    end
+  end
+
+  defp normalize_value(assigns), do: assigns
+
+  # TODO this is a workaround for the datetime-local input type.
+  #      we need to properly handle timezones and offsets.
+  def date_time_from_input(value) do
+    {:ok, date, _offet_secs} = DateTime.from_iso8601("#{value}:00Z+02:00")
+
+    date
+  end
+
+  def date_time_to_input(date = %DateTime{}) do
+    date
+    |> DateTime.to_iso8601()
+    |> String.slice(0..15//1)
   end
 end
