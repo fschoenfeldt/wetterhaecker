@@ -2,11 +2,59 @@ export const weatherMarkers = (weatherPoints) => {
   return weatherPoints.map(weatherMarker);
 };
 
+export const routeDirectionMarkers = (points, drawEveryNthMarker = 1) => {
+  return points
+    .map((currentPoint, index) => {
+      // skip the last point, as it has no next point to calculate direction
+      if (index === points.length - 1) return null;
+
+      const nextPoint = points[index + 1];
+      return routeDirectionMarker({
+        index: index + 1, // start from 1 for better readability
+        currentPoint,
+        nextPoint,
+      });
+    })
+    .filter((marker) => marker !== null)
+    .filter((_, index) => index % drawEveryNthMarker === 0);
+};
+
+const routeDirectionMarker = ({
+  index,
+  currentPoint: { lat, lon },
+  nextPoint: { lat: nextLat, lon: nextLon },
+}) => {
+  // based on current and next point, calculate the direction in degrees
+  // and rotate the marker accordingly
+  // convert radians to degrees
+  const directionDegreesInDegrees =
+    (Math.atan2(nextLon - lon, nextLat - lat) * 180) / Math.PI;
+  const directionDegrees = (directionDegreesInDegrees + 360) % 360;
+
+  const style = `transform: rotate(${directionDegrees}deg);`;
+  return L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: "bg-transparent",
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      html: `
+        <div class="bg-white rounded-full">
+          <div style="${style}" class="hero-arrow-up-circle-solid h-6 w-6 bg-gray-800">
+            <span class="sr-only">
+              ${index}
+            </span>
+          </div>
+        </div>
+      `,
+    }),
+  });
+};
+
 const weatherMarker = ({
-  index: index,
+  index,
   point: { lat, lon },
   weather: { weather },
-  date: date,
+  date,
 }) => {
   const weatherDate = new Date(date);
 
@@ -24,9 +72,17 @@ const weatherMarker = ({
   return L.marker([lat, lon], {
     icon: L.divIcon({
       className: "bg-transparent",
-      iconSize: [48, 48],
-      iconAnchor: [24, 48],
-      html: `<div class="hero-map-pin-solid h-12 w-12 bg-blue-500"><span class="sr-only">${index}</span></div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+      html: `
+        <div class="h-4 w-4 bg-white rounded-full flex items-center justify-center" role="button">
+          <div class="bg-blue-200 h-2 w-2 rounded-full">
+            <span class="sr-only">
+              show weather for point #${index}
+            </span>
+          </div>
+        </div>
+      `,
     }),
   }).bindPopup(
     weather
@@ -39,6 +95,10 @@ const weatherMarker = ({
                 <ul>
                   <li class="text-sm text-gray-500">${formattedDate} ${formattedTime}</li>
                   <li>${weather.precipitation_probability}% chance of rain</li>
+                  <li>${weather.precipitation}mm precipitation</li>
+                  <li>Wind Direction: ${formattedWindDirection(
+                    weather.wind_direction
+                  )}</li>
                   <li>${weather.wind_speed} m/s wind speed</li>
                   <li>${weather.cloud_cover}% cloud cover</li>
                 </ul>
@@ -46,10 +106,23 @@ const weatherMarker = ({
               `
       : `No weather data available for this point`,
     {
-      autoClose: false,
+      autoClose: true,
       closeOnClick: false,
     }
   );
+};
+
+const formattedWindDirection = (windDirectionInDegrees) => {
+  if (windDirectionInDegrees === null) return "N/A";
+
+  if (windDirectionInDegrees < 0 || windDirectionInDegrees > 360) {
+    throw new Error("Wind direction must be between 0 and 360 degrees");
+  }
+
+  const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+
+  const index = Math.round((windDirectionInDegrees % 360) / 45) % 8;
+  return directions[index];
 };
 
 /**
@@ -137,22 +210,43 @@ export const clearPreviousRoute = (that) => {
     that.map.removeLayer(that.route.routePolyline);
     that.map.removeLayer(that.route.startMarker);
     that.map.removeLayer(that.route.endMarker);
+
+    clearPreviousDirectionMarkers(that);
+
     that.route = null;
     console.debug("cleared previous route");
   }
 };
 
-export const getRoute = (map, points) => {
+const clearPreviousDirectionMarkers = (that) => {
+  // Remove previous directionMarkers from the map
+  that.route.directionMarkers.forEach((marker) => {
+    that.map.removeLayer(marker);
+  });
+
+  that.route.directionMarkers = [];
+  console.debug("cleared previous directionMarkers");
+};
+
+export const drawRoute = (map, points) => {
   // draw a polyline for the trackpoints
   const polyline = drawPolyline(map, trackpointsToPolyline(points), {
-    color: "#146eff",
-    weight: 4,
+    color: "#1f2937",
+    weight: 5,
     opacity: 1,
   });
 
   // TODO: every now and then, display an arrow marker on the polyline
   //       to indicate the direction of the track
   // draw a circle for the start and end point
+  const directionMarkers = routeDirectionMarkers(
+    points,
+    Math.round(points.length / 10)
+  );
+  directionMarkers.forEach((marker) => {
+    marker.addTo(map);
+  });
+
   const startPoint = points[0];
   const endPoint = points[points.length - 1];
   const startMarker = drawCircleMarker(map, [startPoint.lat, startPoint.lon]);
@@ -162,6 +256,7 @@ export const getRoute = (map, points) => {
     routePolyline: polyline,
     startMarker,
     endMarker,
+    directionMarkers,
   };
 };
 

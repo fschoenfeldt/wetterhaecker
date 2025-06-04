@@ -2,10 +2,11 @@ import leaflet from "leaflet";
 
 import {
   setTileLayer,
-  getRoute,
+  drawRoute,
   clearPreviousRoute,
   clearPreviousWeatherMarkers,
   weatherMarkers,
+  routeDirectionMarkers,
 } from "./map/mapUtils.js";
 
 import { drawHighChart } from "./map/chartUtils.js";
@@ -30,7 +31,8 @@ export default {
       this.map = leaflet.map(this.el).setView([lat, lon], zoom);
       setTileLayer(this.map);
 
-      this.route = getRoute(this.map, this.points);
+      // route
+      this.route = drawRoute(this.map, this.points);
       this.map.fitBounds(this.route.routePolyline.getBounds());
     });
 
@@ -42,7 +44,7 @@ export default {
       clearPreviousRoute(this);
 
       // draw new route
-      this.route = getRoute(this.map, points);
+      this.route = drawRoute(this.map, points);
       this.map.fitBounds(this.route.routePolyline.getBounds());
     });
 
@@ -56,7 +58,6 @@ export default {
 
       this.weatherMarkers = weatherMarkers(weatherPoints);
       this.weatherMarkers.forEach((marker) => marker.addTo(this.map));
-      this.weatherMarkers[0].openPopup();
 
       // graph init
       this.chart = drawHighChart({
@@ -66,8 +67,15 @@ export default {
       });
     });
 
-    this.el.addEventListener("chart:pointSelected", (event) => {
-      console.debug("event: chart:pointSelected", event.detail);
+    this.el.addEventListener("chart:pointClicked", (event) => {
+      console.debug("event: chart:pointClicked", event.detail);
+      const { x, y } = event.detail;
+
+      // open the weather marker popup
+      // x is the index of the point in the weatherMarkers array
+      if (this.weatherMarkers[x]) {
+        this.weatherMarkers[x].openPopup();
+      }
     });
   },
 };

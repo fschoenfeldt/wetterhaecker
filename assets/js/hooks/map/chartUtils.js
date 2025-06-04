@@ -55,8 +55,8 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
       series: {
         point: {
           events: {
-            mouseOver: function (event) {
-              onPointMouseOver({
+            click: function (event) {
+              onPointClicked({
                 event,
                 that: this,
                 mapHook,
@@ -68,7 +68,7 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
     },
     series: [
       {
-        name: "Route Temperature (°C)",
+        name: "Temperature (°C)",
         type: "spline",
         color: "#ff5733",
         data: weatherPoints.map((point) => {
@@ -161,11 +161,11 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
   });
 };
 
-function onPointMouseOver({ event, that, mapHook }) {
+function onPointClicked({ event, that, mapHook }) {
   // console.debug({ event, that, mapHook });
   const { x, y } = that;
 
-  const customEvent = new CustomEvent("chart:pointSelected", {
+  const customEvent = new CustomEvent("chart:pointClicked", {
     detail: {
       x,
       y,

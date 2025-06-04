@@ -30,7 +30,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     changeset =
       Form.changeset(%Form{}, %{
         "average_speed" => 20.0,
-        "sampling_rate" => 60,
+        "sampling_rate" => 20,
         "start_date_time" => DateTime.utc_now() |> DateTime.add(2, :hour) |> date_time_to_input()
       })
 
@@ -91,44 +91,6 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       >
         <h1 class="text-2xl">Wetterhaecker</h1>
         <.form_item>
-          <.form_label field={@form[:start_date_time]}>
-            Start Date/Time
-          </.form_label>
-          <.form_control>
-            <.input type="datetime-local" field={@form[:start_date_time]} required />
-          </.form_control>
-          <.form_description>
-            The date and time when you start your route, timezone is MESZ (+02:00).
-          </.form_description>
-        </.form_item>
-        <.form_item>
-          <.form_label field={@form[:average_speed]}>
-            Average Speed (km/h)
-          </.form_label>
-          <.form_control>
-            <.input type="number" phx-debounce="500" field={@form[:average_speed]} required />
-          </.form_control>
-          <.form_description>
-            Average speed you expect to travel.
-          </.form_description>
-        </.form_item>
-        <.form_item>
-          <.form_label field={@form[:sampling_rate]}>Sampling Rate (mins)</.form_label>
-          <.form_control>
-            <.input
-              type="number"
-              min="5"
-              max="120"
-              phx-debounce="500"
-              field={@form[:sampling_rate]}
-              required
-            />
-          </.form_control>
-          <.form_description>
-            The rate at which the weather data is sampled.
-          </.form_description>
-        </.form_item>
-        <.form_item>
           <%!-- # TODO: the label doesnt work. --%>
           <.form_label field={@form[:gpx_file]}>GPX File</.form_label>
           <.form_control>
@@ -140,11 +102,52 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
             Upload a custom GPX file to visualize the route on the map.
           </.form_description>
         </.form_item>
+        <.form_item>
+          <.form_label field={@form[:start_date_time]}>
+            Start Date/Time
+          </.form_label>
+          <.form_control>
+            <.input type="datetime-local" field={@form[:start_date_time]} required />
+          </.form_control>
+          <.form_description>
+            The date and time when you start your route, timezone is MESZ (+02:00).
+          </.form_description>
+        </.form_item>
+        <div class="md:flex gap-x-4">
+          <.form_item>
+            <.form_label field={@form[:average_speed]}>
+              Average Speed (km/h)
+            </.form_label>
+            <.form_control>
+              <.input type="number" phx-debounce="500" field={@form[:average_speed]} required />
+            </.form_control>
+            <.form_description>
+              Average speed you expect to travel.
+            </.form_description>
+          </.form_item>
+          <.form_item>
+            <.form_label field={@form[:sampling_rate]}>Sampling Rate (mins)</.form_label>
+            <.form_control>
+              <.input
+                type="number"
+                min="5"
+                max="120"
+                phx-debounce="500"
+                field={@form[:sampling_rate]}
+                required
+              />
+            </.form_control>
+            <.form_description>
+              The rate at which the weather data is sampled.
+            </.form_description>
+          </.form_item>
+        </div>
+
         <hr />
         <fieldset class="relative space-y-4 flex pb-12">
           <%= with route_length = Utils.route_length_km(@gpx),
                    calc_hrs <- Utils.estimated_route_time_hours(@gpx, @form) do %>
-            <div class="flex gap-x-4">
+            <div class="md:flex gap-x-4">
               <.form_item>
                 <.form_label>Total Route length (km)</.form_label>
                 <.form_control>
