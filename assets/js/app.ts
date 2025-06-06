@@ -20,19 +20,19 @@ import "phoenix_html";
 // Establish Phoenix Socket and LiveView configuration.
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
-import topbar from "../vendor/topbar";
+import topbar from "topbar";
 
-import Map from "./hooks/Map";
+import Map from "./hooks/map";
 
-let csrfToken = document
+const csrfToken = document
   .querySelector("meta[name='csrf-token']")
-  .getAttribute("content");
+  ?.getAttribute("content");
 
-let Hooks = {};
+const Hooks = {
+  Map,
+};
 
-Hooks.Map = Map;
-
-let liveSocket = new LiveSocket("/live", Socket, {
+const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: Hooks,
@@ -40,8 +40,12 @@ let liveSocket = new LiveSocket("/live", Socket, {
 
 // Show progress bar on live navigation and form submits
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
-window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
-window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
+window.addEventListener("phx:page-loading-start", () => {
+  topbar.show(300);
+});
+window.addEventListener("phx:page-loading-stop", () => {
+  topbar.hide();
+});
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();
@@ -53,8 +57,12 @@ liveSocket.connect();
 window.liveSocket = liveSocket;
 
 // Allows to execute JS commands from the server
-window.addEventListener("phx:js-exec", ({ detail }) => {
+window.addEventListener("phx:js-exec", (event) => {
+  const customEvent = event as CustomEvent<{ to: string; attr: string }>;
+  const { detail } = customEvent;
+
   document.querySelectorAll(detail.to).forEach((el) => {
+    // @ts-expect-error this is phoenix code
     liveSocket.execJS(el, el.getAttribute(detail.attr));
   });
 });

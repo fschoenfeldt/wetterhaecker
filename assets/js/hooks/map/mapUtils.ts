@@ -1,4 +1,6 @@
-export const weatherMarkers = (weatherPoints) => {
+import leaflet from "leaflet";
+
+export const weatherMarkers = (weatherPoints): leaflet.Marker[] => {
   return weatherPoints.map(weatherMarker);
 };
 
