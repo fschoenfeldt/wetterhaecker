@@ -1,6 +1,20 @@
 import Highcharts from "highcharts";
+import { WeatherTrackPoint } from "../map";
 
-export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
+interface DrawHighChartParams {
+  el?: string; // Element ID where the chart will be drawn
+  weatherPoints: WeatherTrackPoint[];
+  // TODO: get proper type for mapHook
+  mapHook: {
+    el: HTMLElement; // The map element to which the chart is related
+  };
+}
+
+export const drawHighChart = ({
+  el = "chart",
+  weatherPoints,
+  mapHook,
+}: DrawHighChartParams) => {
   return Highcharts.chart(el, {
     chart: {
       type: "line",
@@ -42,6 +56,7 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
         // third axis for precipitation amount
         title: { text: "Precipitation Amount (mm)" },
         min: 0,
+        max: 5,
         // opposite: true,
       },
       {
@@ -72,9 +87,7 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
         type: "spline",
         color: "#ff5733",
         data: weatherPoints.map((point) => {
-          return point?.weather?.weather?.temperature
-            ? point.weather.weather.temperature
-            : null;
+          return point.weather.weather.temperature ?? null;
         }),
       },
       {
@@ -82,9 +95,7 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
         type: "column",
         color: "rgba(0, 123, 255, 0.3)",
         data: weatherPoints.map((point) => {
-          return point?.weather?.weather?.precipitation_probability
-            ? point.weather.weather.precipitation_probability
-            : null;
+          return point.weather.weather.precipitation_probability ?? null;
         }),
         yAxis: 1,
       },
@@ -93,9 +104,7 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
         color: "rgba(0, 123, 255, 0.7)",
         type: "column",
         data: weatherPoints.map((point) => {
-          return point?.weather?.weather?.precipitation
-            ? point.weather.weather.precipitation
-            : null;
+          return point.weather.weather.precipitation ?? null;
         }),
         yAxis: 2,
       },
@@ -104,9 +113,7 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
         type: "spline",
         color: "#28a745",
         data: weatherPoints.map((point) => {
-          return point?.weather?.weather?.wind_speed
-            ? point.weather.weather.wind_speed
-            : null;
+          return point.weather.weather.wind_speed ?? null;
         }),
         yAxis: 3,
         visible: false,
@@ -161,7 +168,15 @@ export const drawHighChart = ({ el = "chart", weatherPoints, mapHook }) => {
   });
 };
 
-function onPointClicked({ event, that, mapHook }) {
+interface OnPointClickedParams {
+  event: Highcharts.PointClickEventObject;
+  that: Highcharts.Point;
+  mapHook: {
+    el: HTMLElement; // The map element to which the chart is related
+  };
+}
+
+function onPointClicked({ that, mapHook }: OnPointClickedParams) {
   // console.debug({ event, that, mapHook });
   const { x, y } = that;
 

@@ -7,13 +7,27 @@ import {
   mapDrawWeatherUpdate,
   mapInit,
 } from "./map/eventHandler";
+import { Source, WeatherRecord } from "../types/brightsky";
 
 export interface GpxExTrackPoint {
   lat: number;
   lon: number;
   ele: number;
   time: string;
+}
+
+export interface WeatherTrackPoint {
+  index: number;
+  point: {
+    lat: number;
+    lon: number;
+  };
   "weather_point?": boolean;
+  date: Date;
+  weather: {
+    weather: WeatherRecord;
+    source: Source;
+  };
 }
 
 export interface MapHookInterface extends ViewHookInterface {
@@ -22,6 +36,9 @@ export interface MapHookInterface extends ViewHookInterface {
   points: GpxExTrackPoint[] | [];
   route: {
     routePolyline: leaflet.Polyline;
+    startMarker: leaflet.CircleMarker;
+    endMarker: leaflet.CircleMarker;
+    directionMarkers: leaflet.Marker[];
   } | null;
   weatherMarkers: leaflet.Marker[];
 }
@@ -50,12 +67,12 @@ const mapHook: MapHook = {
 
     this.handleEvent(
       mapDrawGpxFileUpdate.name,
-      mapDrawGpxFileUpdate.handler.bind(this)
+      mapDrawGpxFileUpdate.handler.bind(this),
     );
 
     this.handleEvent(
       mapDrawWeatherUpdate.name,
-      mapDrawWeatherUpdate.handler.bind(this)
+      mapDrawWeatherUpdate.handler.bind(this),
     );
 
     interface ChartPointClickedPayload {

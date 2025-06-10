@@ -1,5 +1,5 @@
 import leaflet from "leaflet";
-import { GpxExTrackPoint, MapHookInterface } from "../map";
+import { GpxExTrackPoint, MapHookInterface, WeatherTrackPoint } from "../map";
 import { drawHighChart } from "./chartUtils";
 import {
   clearPreviousRoute,
@@ -44,7 +44,7 @@ export const mapDrawGpxFileUpdate = {
   name: "map:drawGpxFileUpdate",
   handler: function (
     this: MapHookInterface,
-    payload: DrawGpxFileUpdatePayload
+    payload: DrawGpxFileUpdatePayload,
   ) {
     console.debug("event: map:drawGpxFileUpdate", payload);
     const { points } = payload;
@@ -59,19 +59,19 @@ export const mapDrawGpxFileUpdate = {
 };
 
 interface DrawWeatherUpdatePayload {
-  points: GpxExTrackPoint[];
+  points: WeatherTrackPoint[];
 }
 
 export const mapDrawWeatherUpdate = {
   name: "map:drawWeatherUpdate",
   handler: function (
     this: MapHookInterface,
-    payload: DrawWeatherUpdatePayload
+    payload: DrawWeatherUpdatePayload,
   ) {
     console.debug("event: map:drawWeatherUpdate", payload);
     const { points } = payload;
     const weatherPoints = points.filter(
-      (point: GpxExTrackPoint) => point["weather_point?"]
+      (point: WeatherTrackPoint) => point["weather_point?"],
     );
     console.debug("weatherPoints", weatherPoints);
 
@@ -79,7 +79,7 @@ export const mapDrawWeatherUpdate = {
 
     this.weatherMarkers = weatherMarkers(weatherPoints);
     this.weatherMarkers.forEach(
-      (marker: leaflet.Marker) => this.map && marker.addTo(this.map)
+      (marker: leaflet.Marker) => this.map && marker.addTo(this.map),
     );
 
     // graph init
