@@ -244,7 +244,6 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     start_date_time =
       form
       |> Phoenix.HTML.Form.input_value(:start_date_time)
-      |> dbg
 
     points
     |> Utils.wrap_with_index()
