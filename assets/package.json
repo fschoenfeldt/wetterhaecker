@@ -7,6 +7,7 @@
   "dependencies": {
     "highcharts": "^12.2.0",
     "leaflet": "^1.9.4",
+    "mitt": "^3.0.1",
     "topbar": "^3.0.0"
   },
   "devDependencies": {

@@ -1,19 +1,14 @@
 import Highcharts from "highcharts";
-import { WeatherTrackPoint } from "../map";
+import { TrackPointWithWeather } from "../../trackpoints";
 
 interface DrawHighChartParams {
-  el?: string; // Element ID where the chart will be drawn
-  weatherPoints: WeatherTrackPoint[];
-  // TODO: get proper type for mapHook
-  mapHook: {
-    el: HTMLElement; // The map element to which the chart is related
-  };
+  el: string;
+  weatherPoints: TrackPointWithWeather[];
 }
 
 export const drawHighChart = ({
   el = "chart",
   weatherPoints,
-  mapHook,
 }: DrawHighChartParams) => {
   return Highcharts.chart(el, {
     chart: {
@@ -74,7 +69,6 @@ export const drawHighChart = ({
               onPointClicked({
                 event,
                 that: this,
-                mapHook,
               });
             },
           },
@@ -171,22 +165,12 @@ export const drawHighChart = ({
 interface OnPointClickedParams {
   event: Highcharts.PointClickEventObject;
   that: Highcharts.Point;
-  mapHook: {
-    el: HTMLElement; // The map element to which the chart is related
-  };
 }
 
-function onPointClicked({ that, mapHook }: OnPointClickedParams) {
-  // console.debug({ event, that, mapHook });
-  const { x, y } = that;
+function onPointClicked({ that }: OnPointClickedParams) {
+  const { x } = that;
 
-  const customEvent = new CustomEvent("chart:pointClicked", {
-    detail: {
-      x,
-      y,
-    },
+  window.emitter.emit("chart:pointClicked", {
+    x,
   });
-  mapHook.el.dispatchEvent(customEvent);
-
-  // console.log("mouseOver on line series", chart);
 }

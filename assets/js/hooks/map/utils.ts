@@ -1,17 +1,17 @@
-import leaflet from "leaflet";
-import { GpxExTrackPoint, MapHookInterface, WeatherTrackPoint } from "../map";
-import L from "leaflet";
+import { default as L, default as leaflet } from "leaflet";
 import { WeatherRecord } from "../../types/brightsky";
+import { GpxExTrackPoint, TrackPointWithWeather } from "../../trackpoints";
+import { MapHookInterface } from "../map";
 
 export const weatherMarkers = (
-  weatherPoints: WeatherTrackPoint[],
+  weatherPoints: TrackPointWithWeather[]
 ): leaflet.Marker[] => {
   return weatherPoints.map(weatherMarker);
 };
 
 export const routeDirectionMarkers = (
   points: GpxExTrackPoint[],
-  drawEveryNthMarker = 1,
+  drawEveryNthMarker = 1
 ) => {
   return points
     .map((currentPoint, index) => {
@@ -69,7 +69,7 @@ const weatherMarker = ({
   point: { lat, lon },
   weather: { weather },
   date,
-}: WeatherTrackPoint) => {
+}: TrackPointWithWeather) => {
   const weatherDate = new Date(date);
 
   // format time with DD:MM:YYYY HH:mm
@@ -108,13 +108,13 @@ const weatherMarker = ({
       <ul>
         <li class="text-sm text-gray-500">${formattedDate} ${formattedTime}</li>
         <li>${formattedMayeNullNumber(
-          weather.precipitation_probability,
+          weather.precipitation_probability
         )}% chance of rain</li>
         <li>${formattedMayeNullNumber(
-          weather.precipitation,
+          weather.precipitation
         )}mm precipitation</li>
         <li>Wind Direction: ${formattedWindDirection(
-          weather.wind_direction,
+          weather.wind_direction
         )}</li>
         <li>${formattedMayeNullNumber(weather.wind_speed)} m/s wind speed</li>
         <li>${formattedMayeNullNumber(weather.cloud_cover)}% cloud cover</li>
@@ -124,7 +124,7 @@ const weatherMarker = ({
     {
       autoClose: true,
       closeOnClick: false,
-    },
+    }
   );
 };
 
@@ -135,7 +135,7 @@ const formattedMayeNullNumber = (value: number | null | undefined) => {
 };
 
 const formattedWindDirection = (
-  windDirectionInDegrees: WeatherRecord["wind_direction"],
+  windDirectionInDegrees: WeatherRecord["wind_direction"]
 ) => {
   if (windDirectionInDegrees === null || windDirectionInDegrees === undefined)
     return "N/A";
@@ -223,45 +223,42 @@ const drawCircleMarker = (
   opts = {
     color: "blue",
     radius: 10,
-  },
+  }
 ) => {
   return L.circleMarker(latlngs, opts).addTo(map);
 };
 
 export const clearPreviousRoute = (that: MapHookInterface) => {
-  if (!that.map) {
-    return;
-  }
+  if (!that.map) return;
+  if (!that.route) return;
 
   // Remove previous route from the map
-  if (that.route) {
-    that.map.removeLayer(that.route.routePolyline);
-    that.map.removeLayer(that.route.startMarker);
-    that.map.removeLayer(that.route.endMarker);
+  that.map.removeLayer(that.route.routePolyline);
+  that.map.removeLayer(that.route.startMarker);
+  that.map.removeLayer(that.route.endMarker);
 
-    clearPreviousDirectionMarkers(that);
+  clearPreviousDirectionMarkers(that);
 
-    that.route = null;
-    console.debug("cleared previous route");
-  }
+  that.route = null;
+  console.debug("cleared previous route");
 };
 
 const clearPreviousDirectionMarkers = (that: MapHookInterface) => {
-  const { map, route } = that;
-  if (map === null) return;
-  if (route === null) return;
+  if (!that.route) return;
 
-  route.directionMarkers.forEach((marker) => {
-    map.removeLayer(marker);
+  that.route.directionMarkers.forEach((marker) => {
+    if (that.map) {
+      that.map.removeLayer(marker);
+    }
   });
-  route.directionMarkers = [];
+  that.route.directionMarkers = [];
 
   console.debug("cleared previous directionMarkers");
 };
 
 export const drawRoute = (
   map: MapHookInterface["map"],
-  points: MapHookInterface["points"],
+  points: MapHookInterface["points"]
 ) => {
   if (!map) {
     throw new Error("Map is not initialized");
@@ -279,7 +276,7 @@ export const drawRoute = (
   // draw a circle for the start and end point
   const directionMarkers = routeDirectionMarkers(
     points,
-    Math.round(points.length / 10),
+    Math.round(points.length / 10)
   );
   directionMarkers.forEach((marker) => {
     marker.addTo(map);
@@ -303,7 +300,7 @@ const drawPolyline = (
   latlngs: leaflet.LatLngLiteral[],
   opts: leaflet.PolylineOptions = {
     color: "red",
-  },
+  }
 ) => {
   return L.polyline(latlngs, opts).addTo(map);
 };
@@ -314,7 +311,7 @@ const drawPolyline = (
  * @param {Array} trackpoints
  */
 const trackpointsToPolyline = (
-  trackpoints: MapHookInterface["points"],
+  trackpoints: MapHookInterface["points"]
 ): leaflet.LatLngLiteral[] => {
   return trackpoints.map(({ lat, lon }) => {
     return { lat, lng: lon };

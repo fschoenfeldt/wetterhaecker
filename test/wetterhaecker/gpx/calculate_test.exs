@@ -10,9 +10,10 @@ defmodule Wetterhaecker.Gpx.CalculateTest do
   defp tp(lat, lon, ele), do: %TrackPoint{lat: lat, lon: lon, ele: ele}
 
   describe "calc_length/1" do
-    @tag :skip
-    test "returns 0 for empty list" do
-      assert Calculate.calc_length([]) == 0
+    test "raises for empty list" do
+      assert_raise FunctionClauseError, fn ->
+        Calculate.calc_length([])
+      end
     end
 
     test "returns 0 for single point" do

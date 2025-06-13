@@ -23,12 +23,15 @@ import { LiveSocket } from "phoenix_live_view";
 import topbar from "topbar";
 
 import Map from "./hooks/map";
+import Chart from "./hooks/chart";
+import mitt, { Emitter } from "mitt";
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");
 
 const Hooks = {
+  Chart,
   Map,
 };
 
@@ -55,6 +58,20 @@ liveSocket.connect();
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket;
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type Events = {
+  "chart:pointClicked": { x: number };
+};
+
+declare global {
+  interface Window {
+    emitter: Emitter<Events>;
+  }
+}
+
+const emitter: Emitter<Events> = mitt<Events>();
+window.emitter = emitter;
 
 // Allows to execute JS commands from the server
 window.addEventListener("phx:js-exec", (event) => {

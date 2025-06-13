@@ -72,7 +72,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       <div class="h-full w-full lg:col-span-5">
         <div id="map" phx-hook="Map" phx-update="ignore" class="h-[50vh] lg:h-[calc(100vh-16rem)]">
         </div>
-        <div id="chart" phx-update="ignore" class="h-[50vh] lg:h-64 p-2">
+        <div id="chart" phx-hook="Chart" phx-update="ignore" class="h-[50vh] lg:h-64 p-2">
           <div class="flex items-center justify-center h-full bg-gray-50">
             <p class="text-center text-gray-500">
               Weather data will be displayed here after you submit the form.
@@ -222,6 +222,9 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         points: socket.assigns.gpx.points
       })
       |> push_event("map:drawWeatherUpdate", %{
+        points: add_time_and_weather(socket.assigns.form, socket.assigns.gpx)
+      })
+      |> push_event("chart:drawWeatherUpdate", %{
         points: add_time_and_weather(socket.assigns.form, socket.assigns.gpx)
       })
 
