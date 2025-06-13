@@ -1,8 +1,5 @@
 defmodule Wetterhaecker.Brightsky.Client do
-  # fire up mock with
-  # prism mock priv/static/brightsky_openapi.json
-  defp base_url, do: "http://127.0.0.1:4010"
-  # defp base_url, do: "https://api.brightsky.dev"
+  defp base_url, do: Application.get_env(:wetterhaecker, __MODULE__)[:base_url]
 
   def request(%{
         method: method,

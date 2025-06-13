@@ -23,7 +23,9 @@ livebook server livebooks/wetterhaecker.livemd
 ```
 
 ## Start Brightsky API Mock
+
 You can configure `lib/wetterhaecker/brightsky/client.ex`:
+
 - to use the real brightsky API
 - to use a mocked endpoint
 
@@ -31,6 +33,12 @@ In case of mock, you need to [install prism mock](https://docs.stoplight.io/docs
 
 ```bash
 prism mock priv/static/brightsky_openapi.json
+```
+
+then, start the application with the appropriate environment variable:
+
+```bash
+BRIGHTSKY_BASE_URL=http://127.0.0.1:4010 iex -S mix phx.server
 ```
 
 ## Type Generation for Brightsky Types
