@@ -34,9 +34,9 @@ defmodule Wetterhaecker.Gpx do
   end
 
   defp parse_gpx(file_path) do
-    {:ok, gpx_doc} = File.read(file_path)
-
-    GpxEx.parse(gpx_doc)
+    with {:ok, gpx_doc} <- File.read(file_path) do
+      GpxEx.parse(gpx_doc)
+    end
   end
 
   defp calculate_total_length(points) when is_list(points) and length(points) == 0 do
