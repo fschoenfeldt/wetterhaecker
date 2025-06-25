@@ -1,5 +1,15 @@
 import Config
 
+# Print only warnings and errors during test
+config :logger, level: :warning
+
+# Initialize plugs at runtime for faster test compilation
+config :phoenix, :plug_init_mode, :runtime
+
+# Enable helpful, but potentially expensive runtime checks
+config :phoenix_live_view,
+  enable_expensive_runtime_checks: true
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
@@ -16,13 +26,3 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "ixAIz6yaYNy65rs9NHxsSEtufw2WpRqzDVq2CC+G7VOmt8KSnPlnaEEIA9NthriT",
   server: false
-
-# Print only warnings and errors during test
-config :logger, level: :warning
-
-# Initialize plugs at runtime for faster test compilation
-config :phoenix, :plug_init_mode, :runtime
-
-# Enable helpful, but potentially expensive runtime checks
-config :phoenix_live_view,
-  enable_expensive_runtime_checks: true

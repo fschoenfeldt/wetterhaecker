@@ -4,7 +4,7 @@ defmodule Wetterhaecker.Gpx.Calculate do
   """
   @spec calc_length(list(GpxEx.TrackPoint.t())) :: float()
   def calc_length(points), do: calc_length(0, points)
-  def calc_length(length, [_head | _tail = []]), do: length
+  def calc_length(length, [_head | [] = _tail]), do: length
 
   def calc_length(length, [head | tail]) do
     length = length + calc_length_between_points(head, List.first(tail))

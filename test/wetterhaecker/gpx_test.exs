@@ -1,5 +1,6 @@
 defmodule Wetterhaecker.GpxTest do
   use ExUnit.Case, async: true
+
   alias Wetterhaecker.Gpx
 
   describe "get_from_preset/1" do
@@ -8,7 +9,7 @@ defmodule Wetterhaecker.GpxTest do
 
       {:ok, %{points: points, total_length: total_length}} = actual
       assert is_list(points)
-      assert length(points) > 0
+      assert not Enum.empty?(points)
       assert is_number(total_length) or match?({:error, _}, total_length)
     end
 
@@ -26,7 +27,7 @@ defmodule Wetterhaecker.GpxTest do
 
       {:ok, %{points: points, total_length: total_length}} = actual
       assert is_list(points)
-      assert length(points) > 0
+      assert not Enum.empty?(points)
       assert is_number(total_length) or match?({:error, _}, total_length)
     end
 

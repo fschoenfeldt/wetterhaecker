@@ -5,12 +5,7 @@ defmodule Wetterhaecker.Brightsky.Client do
 
   defp base_url, do: Application.get_env(:wetterhaecker, __MODULE__)[:base_url]
 
-  def request(%{
-        method: method,
-        query: query,
-        url: url,
-        response: response
-      }) do
+  def request(%{method: method, query: query, url: url, response: response}) do
     request =
       %HTTPoison.Request{
         method: method,

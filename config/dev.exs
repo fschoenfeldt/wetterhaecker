@@ -1,4 +1,31 @@
 import Config
+# Do not include metadata nor timestamps in development logs
+config :logger, :console, format: "[$level] $message\n"
+
+config :oapi_generator,
+  brightsky: [
+    output: [
+      base_module: Wetterhaecker.Brightsky,
+      location: "lib/wetterhaecker/brightsky",
+      operation_subdirectory: "operations/",
+      schema_subdirectory: "schemas/"
+    ]
+  ]
+
+# Initialize plugs at runtime for faster development compilation
+config :phoenix, :plug_init_mode, :runtime
+
+# Set a higher stacktrace during development. Avoid configuring such
+# in production as building large stacktraces may be expensive.
+config :phoenix, :stacktrace_depth, 20
+
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
+
+config :salad_ui, components_path: Path.join(File.cwd!(), "lib/wetterhaecker_web/components")
 
 # Configure your database
 config :wetterhaecker, Wetterhaecker.Repo,
@@ -48,7 +75,6 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
 # If desired, both `http:` and `https:` keys can be
 # configured to run both http and https servers on
 # different ports.
-
 # Watch static and templates for browser reloading.
 config :wetterhaecker, WetterhaeckerWeb.Endpoint,
   live_reload: [
@@ -61,32 +87,3 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :wetterhaecker, dev_routes: true
-
-# Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
-
-# Set a higher stacktrace during development. Avoid configuring such
-# in production as building large stacktraces may be expensive.
-config :phoenix, :stacktrace_depth, 20
-
-# Initialize plugs at runtime for faster development compilation
-config :phoenix, :plug_init_mode, :runtime
-
-config :phoenix_live_view,
-  # Include HEEx debug annotations as HTML comments in rendered markup
-  debug_heex_annotations: true,
-  # Enable helpful, but potentially expensive runtime checks
-  enable_expensive_runtime_checks: true
-
-config :oapi_generator,
-  brightsky: [
-    output: [
-      base_module: Wetterhaecker.Brightsky,
-      location: "lib/wetterhaecker/brightsky",
-      operation_subdirectory: "operations/",
-      schema_subdirectory: "schemas/"
-    ]
-  ]
-
-# Path to install SaladUI components
-config :salad_ui, components_path: Path.join(File.cwd!(), "lib/wetterhaecker_web/components")

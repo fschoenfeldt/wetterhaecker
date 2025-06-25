@@ -1,5 +1,6 @@
 defmodule Wetterhaecker.Gpx.CalculateTest do
   use ExUnit.Case, async: true
+
   alias Wetterhaecker.Gpx.Calculate
 
   defmodule TrackPoint do

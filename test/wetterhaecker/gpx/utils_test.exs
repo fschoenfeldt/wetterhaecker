@@ -1,5 +1,6 @@
 defmodule Wetterhaecker.Gpx.UtilsTest do
   use ExUnit.Case, async: true
+
   alias Wetterhaecker.Gpx.Utils
   alias WetterhaeckerWeb.MapsLive.Index.Form
 

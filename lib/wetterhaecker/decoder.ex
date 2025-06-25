@@ -51,7 +51,7 @@ defmodule Wetterhaecker.Decoder do
           value = Map.get(decoded, Atom.to_string(key)) || Map.get(decoded, key)
           {key, value}
       end)
-      |> Enum.into(%{})
+      |> Map.new()
 
     struct(module, struct_fields)
   end

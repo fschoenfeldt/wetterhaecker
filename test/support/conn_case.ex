@@ -19,15 +19,14 @@ defmodule WetterhaeckerWeb.ConnCase do
 
   using do
     quote do
-      # The default endpoint for testing
-      @endpoint WetterhaeckerWeb.Endpoint
-
       use WetterhaeckerWeb, :verified_routes
 
       # Import conveniences for testing with connections
-      import Plug.Conn
       import Phoenix.ConnTest
+      import Plug.Conn
       import WetterhaeckerWeb.ConnCase
+      # The default endpoint for testing
+      @endpoint WetterhaeckerWeb.Endpoint
     end
   end
 

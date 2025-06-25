@@ -1,13 +1,13 @@
 defmodule Wetterhaecker.Gpx do
   @moduledoc false
 
-  alias Wetterhaecker.Gpx.Calculate
-
   alias GpxEx.{
     Gpx,
     Track,
     TrackSegment
   }
+
+  alias Wetterhaecker.Gpx.Calculate
 
   @doc """
   Reads a preset GPX file from the `priv/static/gpx` directory and returns the points and total length.
@@ -20,8 +20,8 @@ defmodule Wetterhaecker.Gpx do
 
   def get_from_path(file_path) when is_binary(file_path) do
     # credo:disable-for-next-line
-    with {:ok, _gpx} = parse_result <- parse_gpx(file_path),
-         {:ok, points} = extract_points(parse_result) do
+    with {:ok, _gpx} = parse_result <- parse_gpx(file_path) do
+      {:ok, points} = extract_points(parse_result)
       total_length = calculate_total_length(points)
       {:ok, %{points: points, total_length: total_length}}
     end
@@ -41,19 +41,5 @@ defmodule Wetterhaecker.Gpx do
     end
   end
 
-  defp extract_points(
-         {:ok,
-          %Gpx{
-            tracks: [
-              %Track{
-                segments: [
-                  %TrackSegment{
-                    points: points
-                  }
-                ]
-              }
-            ]
-          }}
-       ),
-       do: {:ok, points}
+  defp extract_points({:ok, %Gpx{tracks: [%Track{segments: [%TrackSegment{points: points}]}]}}), do: {:ok, points}
 end

@@ -1,5 +1,6 @@
 defmodule WetterhaeckerWeb.MapsLive.Index do
   use WetterhaeckerWeb, :live_view
+
   alias Phoenix.HTML.Form, as: HTMLForm
   alias Wetterhaecker.Gpx.Utils
 
@@ -8,6 +9,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     Form for the map page.
     """
     use Ecto.Schema
+
     import Ecto.Changeset
 
     embedded_schema do
