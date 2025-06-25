@@ -90,8 +90,20 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       >
         <h1 class="text-2xl">Wetterhaecker</h1>
         <.form_item>
-          <%!-- # TODO: the label doesnt work. --%>
-          <.form_label field={@form[:gpx_file]}>GPX File</.form_label>
+          <%!-- # HACK: this is a workaround so that the form label works
+                        for the live_file_input. --%>
+          <.form_label field={
+            %Phoenix.HTML.FormField{
+              id: @uploads.gpx_file.ref,
+              name: @uploads.gpx_file.ref,
+              field: :gpx_file,
+              value: nil,
+              form: %Phoenix.HTML.Form{},
+              errors: []
+            }
+          }>
+            GPX File
+          </.form_label>
           <.form_control>
             <div>
               <.live_file_input upload={@uploads.gpx_file} />
