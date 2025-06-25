@@ -247,9 +247,7 @@ const clearPreviousDirectionMarkers = (that: MapHookInterface) => {
   if (!that.route) return;
 
   that.route.directionMarkers.forEach((marker) => {
-    if (that.map) {
-      that.map.removeLayer(marker);
-    }
+    that.map?.removeLayer(marker);
   });
   that.route.directionMarkers = [];
 
