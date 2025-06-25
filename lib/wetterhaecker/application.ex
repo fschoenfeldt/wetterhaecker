@@ -12,8 +12,7 @@ defmodule Wetterhaecker.Application do
     children = [
       WetterhaeckerWeb.Telemetry,
       Wetterhaecker.Repo,
-      {Ecto.Migrator,
-       repos: Application.fetch_env!(:wetterhaecker, :ecto_repos), skip: skip_migrations?()},
+      {Ecto.Migrator, repos: Application.fetch_env!(:wetterhaecker, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:wetterhaecker, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Wetterhaecker.PubSub},
       # Start a worker by calling: Wetterhaecker.Worker.start_link(arg)
