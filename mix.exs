@@ -13,6 +13,12 @@ defmodule Wetterhaecker.MixProject do
       # https://github.com/lpil/mix-test.watch?tab=readme-ov-file#usage
       preferred_cli_env: [
         "test.watch": :test
+      ],
+      dialyzer: [
+        plt_add_deps: :app_tree,
+        plt_core_path: "_build/plt_core",
+        plt_file: {:no_warn, "_build/plts/dialyzer.plt"},
+        ignore_warnings: "dialyzer.ignore-warnings"
       ]
     ]
   end
@@ -66,7 +72,8 @@ defmodule Wetterhaecker.MixProject do
       {:salad_ui, "~> 0.14"},
       {:math, "~> 0.6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_check, "~> 0.16.0", only: [:dev], runtime: false}
+      {:ex_check, "~> 0.16.0", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false}
     ]
   end
 
