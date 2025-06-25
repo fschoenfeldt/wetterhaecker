@@ -1,8 +1,13 @@
 import { ViewHookInterface } from "phoenix_live_view";
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type Events = {
+  "chart:pointClicked": { x: number };
+};
+
 export const buildEvent = <T, P>(
   name: string,
-  handler: (this: T, payload: P) => void
+  handler: (this: T, payload: P) => void,
 ) => {
   return {
     name,
@@ -19,7 +24,7 @@ export function registerLiveViewEvent<T extends ViewHookInterface, P = unknown>(
   event: {
     name: string;
     handler: (this: T, payload: P) => void;
-  }
+  },
 ): void {
   that.handleEvent(event.name, event.handler.bind(that));
   console.debug(`Event handler registered for ${event.name}`);
