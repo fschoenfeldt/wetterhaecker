@@ -19,17 +19,11 @@ defmodule Wetterhaecker.Gpx do
   end
 
   def get_from_path(file_path) when is_binary(file_path) do
+    # credo:disable-for-next-line
     with {:ok, _gpx} = parse_result <- parse_gpx(file_path),
          {:ok, points} = extract_points(parse_result) do
       total_length = calculate_total_length(points)
-
-      {
-        :ok,
-        %{
-          points: points,
-          total_length: total_length
-        }
-      }
+      {:ok, %{points: points, total_length: total_length}}
     end
   end
 
@@ -39,12 +33,12 @@ defmodule Wetterhaecker.Gpx do
     end
   end
 
-  defp calculate_total_length(points) when is_list(points) and length(points) == 0 do
-    {:error, "no points given to calculate total_length"}
-  end
-
-  defp calculate_total_length(points) when is_list(points) and length(points) > 0 do
-    Calculate.calc_length(points)
+  defp calculate_total_length(points) when is_list(points) do
+    if Enum.empty?(points) do
+      {:error, "no points given to calculate total_length"}
+    else
+      Calculate.calc_length(points)
+    end
   end
 
   defp extract_points(

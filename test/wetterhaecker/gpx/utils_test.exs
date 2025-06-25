@@ -5,24 +5,24 @@ defmodule Wetterhaecker.Gpx.UtilsTest do
 
   describe "route_length_km/1" do
     test "works with gpx map" do
-      gpx = %{total_length: 12345.6789}
+      gpx = %{total_length: 12_345.6789}
       assert Utils.route_length_km(gpx) == 12.35
     end
 
     test "works with float" do
-      assert Utils.route_length_km(12345.6789) == 12.35
+      assert Utils.route_length_km(12_345.6789) == 12.35
     end
 
     test "raises on integer" do
       assert_raise FunctionClauseError, fn ->
-        Utils.route_length_km(12345)
+        Utils.route_length_km(12_345)
       end
     end
   end
 
   describe "estimated_route_time/2" do
     test "works with gpx and form" do
-      gpx = %{total_length: 12345.6789}
+      gpx = %{total_length: 12_345.6789}
 
       form =
         Form.changeset(%Form{}, %{
@@ -35,12 +35,12 @@ defmodule Wetterhaecker.Gpx.UtilsTest do
     end
 
     test "works with float" do
-      assert Utils.estimated_route_time(12345.6789, 10.0) == 74.0740734
+      assert Utils.estimated_route_time(12_345.6789, 10.0) == 74.0740734
     end
 
     test "raises on integer" do
       assert_raise FunctionClauseError, fn ->
-        Utils.estimated_route_time(12345, 10)
+        Utils.estimated_route_time(12_345, 10)
       end
     end
   end

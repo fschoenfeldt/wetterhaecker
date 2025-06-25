@@ -1,5 +1,6 @@
 defmodule WetterhaeckerWeb.MapsLive.Index do
   use WetterhaeckerWeb, :live_view
+  alias Phoenix.HTML.Form, as: HTMLForm
   alias Wetterhaecker.Gpx.Utils
 
   defmodule Form do
@@ -190,10 +191,8 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
 
   @impl true
   def handle_event("save", %{"form" => form_params}, socket) do
-    IO.inspect(form_params, label: "save")
-
     changeset =
-      Form.changeset(%Form{}, form_params) |> IO.inspect(label: "changeset")
+      Form.changeset(%Form{}, form_params)
 
     socket =
       if changeset.valid? do
@@ -246,11 +245,11 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
   defp add_time_and_weather(form, gpx) do
     points = gpx.points
     estimated_time = Utils.estimated_route_time(gpx, form)
-    sampling_rate = Phoenix.HTML.Form.input_value(form, :sampling_rate)
+    sampling_rate = HTMLForm.input_value(form, :sampling_rate)
 
     start_date_time =
       form
-      |> Phoenix.HTML.Form.input_value(:start_date_time)
+      |> HTMLForm.input_value(:start_date_time)
 
     points
     |> Utils.wrap_with_index()

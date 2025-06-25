@@ -1,4 +1,12 @@
 defmodule Wetterhaecker.Gpx.Utils do
+  @moduledoc """
+  Helper functions for GPX calculations and weather data.
+  """
+
+  alias GpxEx.TrackPoint
+  alias Phoenix.HTML.Form
+  alias Wetterhaecker.Brightsky.Operations
+
   def route_length_km(gpx) when is_map(gpx), do: route_length_km(gpx[:total_length])
 
   def route_length_km(total_length) when is_float(total_length),
@@ -8,7 +16,7 @@ defmodule Wetterhaecker.Gpx.Utils do
     do:
       estimated_route_time(
         Map.get(gpx, :total_length, 0),
-        Phoenix.HTML.Form.input_value(form, :average_speed)
+        Form.input_value(form, :average_speed)
       )
 
   def estimated_route_time(total_length, average_speed)
@@ -20,7 +28,7 @@ defmodule Wetterhaecker.Gpx.Utils do
       do:
         estimated_route_time_hours(
           Map.get(gpx, :total_length, 0),
-          Phoenix.HTML.Form.input_value(form, :average_speed)
+          Form.input_value(form, :average_speed)
         )
 
   def estimated_route_time_hours(total_length, average_speed)
@@ -56,7 +64,7 @@ defmodule Wetterhaecker.Gpx.Utils do
       take_point_every_n =
         round((total_points_count - 1) / parts_we_need_to_sample)
 
-      Enum.map(points_with_indexes, fn %{point: %GpxEx.TrackPoint{}, index: index} =
+      Enum.map(points_with_indexes, fn %{point: %TrackPoint{}, index: index} =
                                          point_with_index ->
         # always take the first point
         Map.put(
@@ -70,7 +78,7 @@ defmodule Wetterhaecker.Gpx.Utils do
 
   def add_weather_data(points) do
     points
-    |> Enum.map(fn %{point: %GpxEx.TrackPoint{}, weather_point?: weather_point?} = sampled_point ->
+    |> Enum.map(fn %{point: %TrackPoint{}, weather_point?: weather_point?} = sampled_point ->
       weather =
         if weather_point? do
           weather_for_point(sampled_point)
@@ -98,7 +106,7 @@ defmodule Wetterhaecker.Gpx.Utils do
   end
 
   defp date_for_point(
-         %{point: %GpxEx.TrackPoint{}, index: index},
+         %{point: %TrackPoint{}, index: index},
          points,
          start_date,
          estimated_time
@@ -122,7 +130,7 @@ defmodule Wetterhaecker.Gpx.Utils do
   end
 
   defp weather_for_point(%{
-         point: %GpxEx.TrackPoint{lat: lat, lon: lon},
+         point: %TrackPoint{lat: lat, lon: lon},
          date: date
        }) do
     opts = [
@@ -131,7 +139,7 @@ defmodule Wetterhaecker.Gpx.Utils do
       lon: lon
     ]
 
-    weather_data = Wetterhaecker.Brightsky.Operations.get_weather(opts)
+    weather_data = Operations.get_weather(opts)
 
     # because we don't define a timespan (`last_date`), we always only get
     # a list with one item in `sources` and `weather`.

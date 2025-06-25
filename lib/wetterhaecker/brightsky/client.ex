@@ -1,4 +1,8 @@
 defmodule Wetterhaecker.Brightsky.Client do
+  @moduledoc """
+  Client for Brightsky API requests.
+  """
+
   defp base_url, do: Application.get_env(:wetterhaecker, __MODULE__)[:base_url]
 
   def request(%{

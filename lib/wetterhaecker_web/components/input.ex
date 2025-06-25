@@ -63,15 +63,14 @@ defmodule WetterhaeckerWeb.Components.Input do
 
   defp normalize_value(assigns), do: assigns
 
-  # FIXME this is a workaround for the datetime-local input type.
-  #       we need to properly handle timezones and offsets.
+  # workaround with fixed timezone
   def date_time_from_input(value) do
     {:ok, date, _offet_secs} = DateTime.from_iso8601("#{value}:00Z+02:00")
 
     date
   end
 
-  def date_time_to_input(date = %DateTime{}) do
+  def date_time_to_input(%DateTime{} = date) do
     date
     |> DateTime.to_iso8601()
     |> String.slice(0..15//1)
