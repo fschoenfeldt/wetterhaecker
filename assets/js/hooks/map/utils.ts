@@ -154,8 +154,6 @@ const formattedWindDirection = (
  * returns html string with weather icon based on the icon code,
  * see: https://brightsky.dev/docs/#/operations/getWeather#response-body
  *
- * // TODO: there are many icons missing in this switch statement
- *
  * @param {String} icon
  * @returns html string with icon
  */
@@ -269,8 +267,6 @@ export const drawRoute = (
     opacity: 1,
   });
 
-  // TODO: every now and then, display an arrow marker on the polyline
-  //       to indicate the direction of the track
   // draw a circle for the start and end point
   const directionMarkers = routeDirectionMarkers(
     points,

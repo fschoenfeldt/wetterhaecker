@@ -85,7 +85,6 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         class="space-y-6 p-4 border rounded shadow lg:col-span-3"
         for={@form}
         id="map-form"
-        phx-change="validate"
         phx-submit="save"
         multipart
       >
@@ -175,13 +174,6 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       </.form>
     </div>
     """
-  end
-
-  # TODO: do we really need this?
-  @impl true
-  def handle_event("validate", params, socket) do
-    IO.inspect(params, label: "validate")
-    {:noreply, socket}
   end
 
   @impl true
