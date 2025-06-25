@@ -74,7 +74,8 @@ defmodule Wetterhaecker.MixProject do
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_check, "~> 0.16.0", only: [:dev], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:quokka, "~> 2.7", only: [:dev, :test], runtime: false}
     ]
   end
 
