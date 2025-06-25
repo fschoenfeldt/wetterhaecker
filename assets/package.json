@@ -2,7 +2,10 @@
   "scripts": {
     "check-types": "tsc --noemit",
     "eslint": "eslint",
-    "lint": "npm run eslint && npm run check-types"
+    "lint": "npm run eslint && npm run check-types",
+    "test": "vitest",
+    "test:ui": "vitest --ui --coverage",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "highcharts": "^12.2.0",
@@ -15,10 +18,13 @@
     "@types/leaflet": "^1.9.18",
     "@types/phoenix": "^1.6.6",
     "@types/phoenix_live_view": "^1.0.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.2.0",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.1"
+    "typescript-eslint": "^8.33.1",
+    "vitest": "^3.2.4"
   }
 }
