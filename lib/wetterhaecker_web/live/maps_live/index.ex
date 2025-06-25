@@ -89,6 +89,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         for={@form}
         id="map-form"
         phx-submit="save"
+        phx-change="validate"
         multipart
       >
         <h1 class="text-2xl">Wetterhaecker</h1>
@@ -189,6 +190,13 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       </.form>
     </div>
     """
+  end
+
+  # we need to implement the validate callback because
+  # of the live file upload: https://hexdocs.pm/phoenix_live_view/uploads.html#render-reactive-elements
+  @impl true
+  def handle_event("validate", _params, socket) do
+    {:noreply, socket}
   end
 
   @impl true
