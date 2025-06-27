@@ -17,8 +17,7 @@ defmodule Wetterhaecker.MixProject do
       dialyzer: [
         plt_add_deps: :app_tree,
         plt_core_path: "_build/plt_core",
-        plt_file: {:no_warn, "_build/plts/dialyzer.plt"},
-        ignore_warnings: "dialyzer.ignore-warnings"
+        plt_file: {:no_warn, "_build/plts/dialyzer.plt"}
       ]
     ]
   end
