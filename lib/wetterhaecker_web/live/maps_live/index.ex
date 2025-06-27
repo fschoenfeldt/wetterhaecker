@@ -71,9 +71,9 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="space-y-4 lg:grid lg:grid-cols-8 lg:gap-4 lg:min-h-screen">
+    <div class="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-8 lg:gap-4 lg:min-h-screen p-4 lg:p-8">
       <div class="h-full w-full lg:col-span-5">
-        <div id="map" phx-hook="Map" phx-update="ignore" class="h-[50vh] lg:h-[calc(100vh-16rem)]">
+        <div id="map" phx-hook="Map" phx-update="ignore" class="h-[50vh] lg:h-[calc(100vh-20rem)]">
         </div>
         <div id="chart" phx-hook="Chart" phx-update="ignore" class="h-[50vh] lg:h-64 p-2">
           <div class="flex items-center justify-center h-full bg-gray-50">
