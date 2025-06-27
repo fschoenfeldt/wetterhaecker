@@ -2,7 +2,7 @@ defmodule Wetterhaecker.Gpx.UtilsTest do
   use ExUnit.Case, async: true
 
   alias Wetterhaecker.Gpx.Utils
-  alias WetterhaeckerWeb.MapsLive.Index.Form
+  alias WetterhaeckerWeb.Components.MapsLive.FormComponent.Form
 
   describe "route_length_km/1" do
     test "works with gpx map" do
