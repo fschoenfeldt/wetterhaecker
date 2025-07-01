@@ -25,6 +25,8 @@ defmodule WetterhaeckerWeb.Components.MapsLive.Utils do
 
   A list of points with added time and weather data
   """
+  def add_time_and_weather(_form, %{total_length: 0, points: []} = _gpx), do: []
+
   def add_time_and_weather(form, gpx) do
     points = gpx.points
     estimated_time = GpxUtils.estimated_route_time(gpx, form)

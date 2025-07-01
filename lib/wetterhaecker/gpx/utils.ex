@@ -35,6 +35,7 @@ defmodule Wetterhaecker.Gpx.Utils do
 
   def route_length_km(total_length) when is_float(total_length), do: Float.ceil(total_length / 1000, 2)
 
+  @spec estimated_route_time(float() | map(), Form.t()) :: float()
   def estimated_route_time(gpx, form) when is_map(gpx) and is_struct(form, Form),
     do: estimated_route_time(Map.get(gpx, :total_length, 0), Form.input_value(form, :average_speed))
 

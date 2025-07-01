@@ -47,7 +47,10 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-8 lg:gap-4 lg:min-h-screen p-4 lg:p-8">
+    <div
+      id="maps-live"
+      class="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-8 lg:gap-4 lg:min-h-screen p-4 lg:p-8"
+    >
       <div class="h-full w-full lg:col-span-5">
         <.live_component module={MapComponent} id="map" />
         <.live_component module={ChartComponent} id="chart" />
@@ -66,27 +69,27 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
   end
 
   @impl true
-  def handle_info({:form_submitted, %{form: form, gpx_result: gpx_result}}, socket) do
+  def handle_info({:form_submitted, %{form: _form, gpx_result: {:error, reason}}}, socket) do
+    {:noreply, socket |> put_flash(:error, "Failed to process GPX file: #{reason}")}
+  end
+
+  @impl true
+  def handle_info({:form_submitted, %{form: form, gpx_result: nil}}, socket) do
+    # no GPX file uploaded, use existing data
+    handle_info({:form_submitted, %{form: form, gpx_result: socket.assigns.gpx}}, socket)
+  end
+
+  @impl true
+  def handle_info({:form_submitted, %{form: form, gpx_result: {:ok, gpx}}}, socket) do
     socket =
-      case gpx_result do
-        {:ok, gpx} ->
-          socket |> assign(:gpx, gpx)
-
-        # no GPX file uploaded
-        nil ->
-          socket
-
-        {:error, reason} ->
-          socket |> put_flash(:error, "Failed to process GPX file: #{reason}")
-      end
-
-    # Update the form
-    socket = assign(socket, :form, form)
+      socket
+      |> assign(:gpx, gpx)
+      |> assign(:form, form)
 
     # Calculate weather points
     weather_points = Utils.add_time_and_weather(socket.assigns.form, socket.assigns.gpx)
 
-    # Update the map and chart components
+    # send updates to child components
     socket =
       socket
       |> MapComponent.update_gpx_points(socket.assigns.gpx.points)

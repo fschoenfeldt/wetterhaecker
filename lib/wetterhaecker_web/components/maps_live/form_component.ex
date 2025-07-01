@@ -74,7 +74,7 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   @impl true
   def render(assigns) do
     ~H"""
-    <div id="form-component" class="lg:col-span-3">
+    <div id="weather-form" class="lg:col-span-3">
       <.form
         class="space-y-6 p-4 border rounded shadow"
         for={@form}
