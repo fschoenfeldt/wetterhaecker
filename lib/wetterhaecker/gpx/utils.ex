@@ -5,7 +5,6 @@ defmodule Wetterhaecker.Gpx.Utils do
 
   alias GpxEx.TrackPoint
   alias Phoenix.HTML.Form
-  alias Wetterhaecker.Brightsky.Client
   alias Wetterhaecker.Brightsky.Source
   alias Wetterhaecker.Brightsky.WeatherRecord
 
