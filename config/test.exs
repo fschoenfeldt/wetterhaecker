@@ -26,3 +26,6 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "ixAIz6yaYNy65rs9NHxsSEtufw2WpRqzDVq2CC+G7VOmt8KSnPlnaEEIA9NthriT",
   server: false
+
+# Configure application to use mock BrightskyService for tests
+config :wetterhaecker, :brightsky_service, Wetterhaecker.Brightsky.WeatherMock

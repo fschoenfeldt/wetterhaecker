@@ -1,8 +1,14 @@
 defmodule Wetterhaecker.Gpx.UtilsTest do
   use ExUnit.Case, async: true
 
+  import Hammox
+
+  alias Wetterhaecker.Brightsky.WeatherMock
   alias Wetterhaecker.Gpx.Utils
   alias WetterhaeckerWeb.Components.MapsLive.FormComponent.Form
+
+  # Make sure all mocks defined via Hammox implement the behaviour they're mocking
+  setup :verify_on_exit!
 
   describe "route_length_km/1" do
     test "works with gpx map" do
@@ -143,6 +149,99 @@ defmodule Wetterhaecker.Gpx.UtilsTest do
       ]
 
       assert actual == expected
+    end
+  end
+
+  describe "add_weather_data/1" do
+    test "adds weather data to points that have weather_point? flag set to true" do
+      # Setup test data
+      test_date = ~U[2023-01-01 12:00:00Z]
+      points = create_test_points(test_date)
+
+      # Mock weather API responses
+      setup_weather_api_mocks()
+
+      # Call the function under test
+      actual = Utils.add_weather_data(points)
+      expected = create_expected_result(test_date)
+
+      assert actual == expected
+    end
+
+    # Test helper functions
+    defp create_test_points(test_date) do
+      [
+        create_point(53.551086, 9.993682, 0, true, test_date),
+        create_point(53.552086, 9.994682, 1, false, DateTime.add(test_date, 30, :minute)),
+        create_point(53.553086, 9.995682, 2, true, DateTime.add(test_date, 60, :minute))
+      ]
+    end
+
+    defp create_point(lat, lon, index, is_weather_point, date) do
+      %{
+        point: %GpxEx.TrackPoint{lat: lat, lon: lon},
+        index: index,
+        weather_point?: is_weather_point,
+        date: date
+      }
+    end
+
+    defp setup_weather_api_mocks do
+      # First weather point (index 0)
+      expect(WeatherMock, :get_weather, fn opts ->
+        assert opts[:lat] == 53.551086
+        assert opts[:lon] == 9.993682
+
+        {:ok,
+         %{
+           sources: [%{id: "test_source_1", distance: 100}],
+           weather: [%{temperature: 20.0, precipitation: 0.0, cloud_cover: 10}]
+         }}
+      end)
+
+      # Second weather point (index 2)
+      expect(WeatherMock, :get_weather, fn opts ->
+        assert opts[:lat] == 53.553086
+        assert opts[:lon] == 9.995682
+
+        {:ok,
+         %{
+           sources: [%{id: "test_source_2", distance: 200}],
+           weather: [%{temperature: 22.0, precipitation: 5.0, cloud_cover: 80}]
+         }}
+      end)
+    end
+
+    defp create_expected_result(test_date) do
+      [
+        %{
+          point: %GpxEx.TrackPoint{lat: 53.551086, lon: 9.993682},
+          index: 0,
+          weather_point?: true,
+          date: test_date,
+          weather: %{
+            source: %{id: "test_source_1", distance: 100},
+            weather: %{temperature: 20.0, precipitation: 0.0, cloud_cover: 10}
+          }
+        },
+        %{
+          point: %GpxEx.TrackPoint{lat: 53.552086, lon: 9.994682},
+          index: 1,
+          weather_point?: false,
+          date: DateTime.add(test_date, 30, :minute),
+          weather: nil
+        },
+        %{
+          point: %GpxEx.TrackPoint{lat: 53.553086, lon: 9.995682},
+          index: 2,
+          weather_point?: true,
+          date: DateTime.add(test_date, 60, :minute),
+          weather: %{
+            source: %{id: "test_source_2", distance: 200},
+            weather: %{temperature: 22.0, precipitation: 5.0, cloud_cover: 80}
+          }
+        }
+      ]
     end
   end
 end

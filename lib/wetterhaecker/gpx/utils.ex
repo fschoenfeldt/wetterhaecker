@@ -5,7 +5,7 @@ defmodule Wetterhaecker.Gpx.Utils do
 
   alias GpxEx.TrackPoint
   alias Phoenix.HTML.Form
-  alias Wetterhaecker.Brightsky.Operations
+  alias Wetterhaecker.Brightsky.Client
   alias Wetterhaecker.Brightsky.Source
   alias Wetterhaecker.Brightsky.WeatherRecord
 
@@ -203,7 +203,7 @@ defmodule Wetterhaecker.Gpx.Utils do
     end
   end
 
-  @spec weather_for_point(weather_point()) :: weather_data()
+  @spec weather_for_point(weather_point()) :: weather_data() | nil
   defp weather_for_point(%{point: %TrackPoint{lat: lat, lon: lon}, date: date}) do
     opts = [
       date: date,
@@ -211,13 +211,18 @@ defmodule Wetterhaecker.Gpx.Utils do
       lon: lon
     ]
 
-    weather_data = Operations.get_weather(opts)
+    case Wetterhaecker.Brightsky.Weather.get_weather(opts) do
+      {:ok, weather_data} ->
+        # because we don't define a timespan (`last_date`), we always only get
+        # a list with one item in `sources` and `weather`.
+        %{
+          source: List.first(weather_data.sources),
+          weather: List.first(weather_data.weather)
+        }
 
-    # because we don't define a timespan (`last_date`), we always only get
-    # a list with one item in `sources` and `weather`.
-    %{
-      source: List.first(weather_data.sources),
-      weather: List.first(weather_data.weather)
-    }
+      # TODO: think about returning an error tuple here instead of nil
+      {:error, _error} ->
+        nil
+    end
   end
 end

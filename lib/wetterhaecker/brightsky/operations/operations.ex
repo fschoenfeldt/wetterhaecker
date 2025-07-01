@@ -316,12 +316,12 @@ defmodule Wetterhaecker.Brightsky.Operations do
     * `lon`: Longitude in decimal degrees.
     * `date`: Timestamp of first record to retrieve, in ISO 8601 format. May contain time and/or UTC offset. (_Defaults to 1 hour before latest measurement._)
     * `last_date`: Timestamp of last record to retrieve, in ISO 8601 format. May contain time and/or UTC offset. (_Defaults to 2 hours after `date`._)
-    * `format`: 
+    * `format`:
       Determines how the precipitation data is encoded into the `precipitation_5` field:
       * `compressed`: base64-encoded, zlib-compressed bytestring of 2-byte integers
       * `bytes`: base64-encoded bytestring of 2-byte integers
       * `plain`: Nested array of integers
-              
+
     * `tz`: Timezone in which record timestamps will be presented, as <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">tz database name</a>. Will also be used as timezone when parsing `date` and `last_date`, unless these have explicit UTC offsets. If omitted but `date` has an explicit UTC offset, that offset will be used as timezone. Otherwise will default to UTC.
 
   """
