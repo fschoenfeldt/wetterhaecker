@@ -70,7 +70,8 @@ defmodule Wetterhaecker.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:quokka, "~> 2.7", only: [:dev, :test], runtime: false},
-      {:hammox, "~> 0.7", only: [:test]}
+      {:hammox, "~> 0.7", only: [:test]},
+      {:live_isolated_component, "~> 0.9.0", only: [:dev, :test]}
     ]
   end
 

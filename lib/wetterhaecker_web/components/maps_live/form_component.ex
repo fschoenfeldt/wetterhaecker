@@ -7,7 +7,6 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   """
   use WetterhaeckerWeb, :live_component
 
-  alias Wetterhaecker.Gpx
   alias Wetterhaecker.Gpx.Utils
 
   defmodule Form do
