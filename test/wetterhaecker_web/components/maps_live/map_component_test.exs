@@ -5,27 +5,14 @@ defmodule WetterhaeckerWeb.Components.MapsLive.MapComponentTest do
 
   alias WetterhaeckerWeb.Components.MapsLive.MapComponent
 
-  @tag :todo
-  test "renders map container", %{conn: conn} do
-    # TODO: Implement test to check if the map container is rendered correctly
-    # Hint: Use render_component/3 for LiveComponents
-  end
+  # So far, `MapComponent` is a client side component only.
+  # All testing should be done to the according js hooks.
 
-  @tag :todo
-  test "init_map pushes map:init event", %{conn: conn} do
-    # TODO: Implement test to check if the map:init event is pushed on initialization
-    # Hint: Check the generated events with pushed_events
-  end
+  describe "mount/3" do
+    test "initial render works" do
+      actual = render_component(MapComponent)
 
-  @tag :todo
-  test "update_gpx_points pushes map:drawGpxFileUpdate event", %{conn: conn} do
-    # TODO: Implement test to check if the map:drawGpxFileUpdate event is pushed when GPX points are updated
-    # Hint: Check if the correct event is pushed
-  end
-
-  @tag :todo
-  test "update_weather_points pushes map:drawWeatherUpdate event", %{conn: conn} do
-    # TODO: Implement test to check if the map:drawWeatherUpdate event is pushed when weather points are updated
-    # Hint: Check if the correct event is pushed
+      assert actual =~ ~s(id="map" phx-hook="Map")
+    end
   end
 end

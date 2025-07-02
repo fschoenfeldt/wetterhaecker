@@ -4,27 +4,14 @@ defmodule WetterhaeckerWeb.Components.MapsLive.ChartComponentTest do
   import Phoenix.LiveViewTest
 
   alias WetterhaeckerWeb.Components.MapsLive.ChartComponent
+  # So far, `ChartComponent` is a client side component only.
+  # All testing should be done to the according js hooks.
 
-  @tag :todo
-  test "renders chart container", %{conn: conn} do
-    # TODO: Implement test to check if the chart container is rendered correctly
-    # Hint: Use render_component/3 for LiveComponents
-  end
+  describe "mount/3" do
+    test "initial render works" do
+      actual = render_component(ChartComponent)
 
-  @tag :todo
-  test "update_weather_data updates weather data", %{conn: conn} do
-    # TODO: Implement test for update_weather_data function
-    # Hint: Check if the correct event is pushed
-  end
-
-  @tag :todo
-  test "validate_weather_data_format checks data format correctly", %{conn: conn} do
-    # TODO: Implement test for weather data format validation
-    # Hint: Create test cases for valid and invalid data formats
-  end
-
-  @tag :todo
-  test "update_weather_data pushes chart:drawWeatherUpdate event" do
-    # TODO: Implement test to check if the chart:drawWeatherUpdate event is pushed when weather data is updated
+      assert actual =~ ~s(id="chart" phx-hook="Chart")
+    end
   end
 end
