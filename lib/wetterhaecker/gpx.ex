@@ -9,10 +9,12 @@ defmodule Wetterhaecker.Gpx do
 
   alias Wetterhaecker.Gpx.Calculate
 
+  @type gpx_with_length() :: %{points: list(), total_length: float()}
+
   @doc """
   Reads a preset GPX file from the `priv/static/gpx` directory and returns the points and total length.
   """
-  @spec get_from_path(file_path :: String.t()) :: {:ok, %{points: list(), total_length: float()}} | {:error, binary()}
+  @spec get_from_path(file_path :: String.t()) :: {:ok, gpx_with_length()} | {:error, binary()}
   def get_from_preset(preset_file_name \\ "Langeoog.gpx") do
     [:code.priv_dir(:wetterhaecker), "static", "gpx", preset_file_name]
     |> Path.join()

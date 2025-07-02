@@ -7,6 +7,7 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   """
   use WetterhaeckerWeb, :live_component
 
+  alias Wetterhaecker.Gpx
   alias Wetterhaecker.Gpx.Utils
 
   defmodule Form do
@@ -47,6 +48,10 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
         gpx={@gpx}
       />
   """
+  attr :id, :string, required: true
+  attr :form, :map, required: true, doc: "the form data in form of a `Form` struct"
+  attr :gpx, :map, required: true, doc: "the GPX map in form of a `Wetterhaecker.Gpx.gpx_with_length`"
+
   @impl true
   def mount(socket) do
     # Initialize form with default values
