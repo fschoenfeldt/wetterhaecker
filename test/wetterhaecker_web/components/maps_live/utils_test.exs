@@ -1,14 +1,11 @@
 defmodule WetterhaeckerWeb.Components.MapsLive.UtilsTest do
   use ExUnit.Case, async: true
 
+  import Hammox
   import Phoenix.Component, only: [to_form: 1]
 
-  alias WetterhaeckerWeb.Components.MapsLive.{
-    ChartComponent,
-    FormComponent,
-    MapComponent,
-    Utils
-  }
+  alias Wetterhaecker.Brightsky.WeatherMock
+  alias WetterhaeckerWeb.Components.MapsLive.Utils
 
   describe "add_time_and_weather/2" do
     test "works when there are no points in the gpx file (noop)" do
@@ -24,9 +21,6 @@ defmodule WetterhaeckerWeb.Components.MapsLive.UtilsTest do
       assert actual == expected
     end
 
-    # TODO: in order to do this test, we'll need to mock the underlying modules
-    #       (especially the brightsky module)
-    @tag :skip
     test "works when there are points in the gpx file" do
       form =
         to_form(%{
@@ -44,14 +38,57 @@ defmodule WetterhaeckerWeb.Components.MapsLive.UtilsTest do
         total_length: 100.0
       }
 
+      expect(WeatherMock, :get_weather, fn _ ->
+        {:ok, %{weather: [%{weather: "sunny"}], sources: [%{id: "mock_source"}]}}
+      end)
+
       actual = Utils.add_time_and_weather(form, gpx)
 
+      # TODO DRY: these mock points are used in multiple tests, consider moving to a helper function
       expected = [
-        %{lat: 52.5200, lon: 13.4050, time: 0, weather: "sunny"},
-        %{lat: 52.5201, lon: 13.4051, time: 100, weather: "sunny"}
+        %{
+          weather: %{
+            source: %{id: "mock_source"},
+            weather: %{weather: "sunny"}
+          },
+          date: DateTime.utc_now(),
+          index: 0,
+          point: %GpxEx.TrackPoint{
+            time: nil,
+            lat: 52.52,
+            lon: 13.405,
+            ele: nil
+          },
+          weather_point?: true
+        },
+        %{
+          weather: nil,
+          date: DateTime.utc_now(),
+          index: 1,
+          point: %GpxEx.TrackPoint{
+            time: nil,
+            lat: 52.5201,
+            lon: 13.4051,
+            ele: nil
+          },
+          weather_point?: false
+        },
+        %{
+          index: 2,
+          date: DateTime.utc_now(),
+          weather: nil,
+          point: %GpxEx.TrackPoint{
+            time: nil,
+            lat: 52.5202,
+            lon: 13.4052,
+            ele: nil
+          },
+          weather_point?: false
+        }
       ]
 
-      assert actual == expected
+      assert Enum.map(actual, &Map.delete(&1, :date)) ==
+               Enum.map(expected, &Map.delete(&1, :date))
     end
   end
 end
