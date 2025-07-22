@@ -148,6 +148,14 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
     end
   end
 
+  @spec mock_track_points() :: list(GpxEx.TrackPoint.t())
+  defp mock_track_points do
+    [
+      %GpxEx.TrackPoint{lat: 53.551086, lon: 9.993682, ele: 0, time: nil},
+      %GpxEx.TrackPoint{lat: 53.552086, lon: 9.994682, ele: 0, time: nil}
+    ]
+  end
+
   @spec mock_track_points_with_weather() :: list(Wetterhaecker.Gpx.Utils.track_point_with_weather())
   defp mock_track_points_with_weather do
     points = mock_track_points()
@@ -182,13 +190,5 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
         cloud_cover: 50
       }
     }
-  end
-
-  @spec mock_track_points() :: list(GpxEx.TrackPoint.t())
-  defp mock_track_points do
-    [
-      %GpxEx.TrackPoint{lat: 53.551086, lon: 9.993682, ele: 0, time: nil},
-      %GpxEx.TrackPoint{lat: 53.552086, lon: 9.994682, ele: 0, time: nil}
-    ]
   end
 end

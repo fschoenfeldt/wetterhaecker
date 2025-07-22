@@ -76,7 +76,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
   @impl true
   def handle_info({:form_submitted, %{form: form, gpx_result: nil}}, socket) do
     # no GPX file uploaded, use existing data
-    handle_info({:form_submitted, %{form: form, gpx_result: socket.assigns.gpx}}, socket)
+    handle_info({:form_submitted, %{form: form, gpx_result: {:ok, socket.assigns.gpx}}}, socket)
   end
 
   @impl true
