@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.Location do
+defmodule Wetterhaecker.Weather.Brightsky.Location do
   @moduledoc """
   Provides struct and type for a Location
   """

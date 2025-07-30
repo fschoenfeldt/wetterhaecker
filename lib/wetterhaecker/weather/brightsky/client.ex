@@ -1,7 +1,10 @@
-defmodule Wetterhaecker.Brightsky.Client do
+defmodule Wetterhaecker.Weather.Brightsky.Client do
   @moduledoc """
   Client for Brightsky API requests.
   """
+
+  # TODO: don't use Brightsky directly!
+  alias Wetterhaecker.Weather.Brightsky.WeatherResponse
 
   defp base_url, do: Application.get_env(:wetterhaecker, __MODULE__)[:base_url]
 
@@ -28,12 +31,14 @@ defmodule Wetterhaecker.Brightsky.Client do
       {_status_code, {module, _type}} =
         Enum.find(response, fn {code, _} -> code == status_code end)
 
-      decoded |> Wetterhaecker.Decoder.decode(module) |> response()
+      decoded
+      |> Wetterhaecker.Decoder.decode(module)
+      |> response()
     end
   end
 
   @spec response(any()) :: {:ok, any()} | {:error, any()}
-  defp response(%Wetterhaecker.Brightsky.WeatherResponse{} = result) do
+  defp response(%WeatherResponse{} = result) do
     {:ok, result}
   end
 

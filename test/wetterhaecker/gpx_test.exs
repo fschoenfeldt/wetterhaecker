@@ -9,7 +9,7 @@ defmodule Wetterhaecker.GpxTest do
 
       {:ok, %{points: points, total_length: total_length}} = actual
       assert is_list(points)
-      assert not Enum.empty?(points)
+      refute Enum.empty?(points)
       assert is_number(total_length) or match?({:error, _}, total_length)
     end
 
@@ -27,7 +27,7 @@ defmodule Wetterhaecker.GpxTest do
 
       {:ok, %{points: points, total_length: total_length}} = actual
       assert is_list(points)
-      assert not Enum.empty?(points)
+      refute Enum.empty?(points)
       assert is_number(total_length) or match?({:error, _}, total_length)
     end
 

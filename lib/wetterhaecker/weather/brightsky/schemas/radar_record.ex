@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.RadarRecord do
+defmodule Wetterhaecker.Weather.Brightsky.RadarRecord do
   @moduledoc """
   Provides struct and type for a RadarRecord
   """

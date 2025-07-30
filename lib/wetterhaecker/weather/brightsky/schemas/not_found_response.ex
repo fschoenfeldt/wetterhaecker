@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.NotFoundResponse do
+defmodule Wetterhaecker.Weather.Brightsky.NotFoundResponse do
   @moduledoc """
   Provides struct and type for a NotFoundResponse
   """

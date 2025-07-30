@@ -5,7 +5,7 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
   import Phoenix.Component, only: [to_form: 1]
   import Phoenix.LiveViewTest
 
-  alias Wetterhaecker.Brightsky.WeatherMock
+  alias Wetterhaecker.Weather.WeatherMock
   alias WetterhaeckerWeb.Components.MapsLive.FormComponent
 
   setup :verify_on_exit!

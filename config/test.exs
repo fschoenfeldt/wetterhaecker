@@ -28,4 +28,4 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
   server: false
 
 # Configure application to use mock BrightskyService for tests
-config :wetterhaecker, :brightsky_service, Wetterhaecker.Brightsky.WeatherMock
+config :wetterhaecker, :weather, Wetterhaecker.Weather.WeatherMock

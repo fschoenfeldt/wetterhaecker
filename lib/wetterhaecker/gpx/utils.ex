@@ -5,8 +5,9 @@ defmodule Wetterhaecker.Gpx.Utils do
 
   alias GpxEx.TrackPoint
   alias Phoenix.HTML.Form
-  alias Wetterhaecker.Brightsky.Source
-  alias Wetterhaecker.Brightsky.WeatherRecord
+  # TODO: dont' use Brightsky directly!
+  alias Wetterhaecker.Weather.Brightsky.Source
+  alias Wetterhaecker.Weather.Brightsky.WeatherRecord
 
   @type track_point() :: GpxEx.TrackPoint.t()
   @type point_with_index() :: %{point: track_point(), index: non_neg_integer()}
@@ -210,7 +211,7 @@ defmodule Wetterhaecker.Gpx.Utils do
       lon: lon
     ]
 
-    case Wetterhaecker.Brightsky.Weather.get_weather(opts) do
+    case Wetterhaecker.Weather.get_weather(opts) do
       {:ok, weather_data} ->
         # because we don't define a timespan (`last_date`), we always only get
         # a list with one item in `sources` and `weather`.

@@ -4,7 +4,7 @@ defmodule WetterhaeckerWeb.Components.MapsLive.UtilsTest do
   import Hammox
   import Phoenix.Component, only: [to_form: 1]
 
-  alias Wetterhaecker.Brightsky.WeatherMock
+  alias Wetterhaecker.Weather.WeatherMock
   alias WetterhaeckerWeb.Components.MapsLive.Utils
 
   describe "add_time_and_weather/2" do

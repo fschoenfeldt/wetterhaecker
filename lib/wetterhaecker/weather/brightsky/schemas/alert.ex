@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.Alert do
+defmodule Wetterhaecker.Weather.Brightsky.Alert do
   @moduledoc """
   Provides struct and type for a Alert
   """

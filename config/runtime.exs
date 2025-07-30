@@ -16,12 +16,13 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+alias Wetterhaecker.Weather.Brightsky.Client
+
 if System.get_env("PHX_SERVER") do
   config :wetterhaecker, WetterhaeckerWeb.Endpoint, server: true
 end
 
-config :wetterhaecker, Wetterhaecker.Brightsky.Client,
-  base_url: System.get_env("BRIGHTSKY_BASE_URL") || "https://api.brightsky.dev"
+config :wetterhaecker, Client, base_url: System.get_env("BRIGHTSKY_BASE_URL") || "https://api.brightsky.dev"
 
 if config_env() == :prod do
   database_path =

@@ -1,13 +1,15 @@
-defmodule Wetterhaecker.Brightsky.RadarResponse do
+defmodule Wetterhaecker.Weather.Brightsky.RadarResponse do
   @moduledoc """
   Provides struct and type for a RadarResponse
   """
+
+  alias Wetterhaecker.Weather.Brightsky.RadarRecord
 
   @type t :: %__MODULE__{
           bbox: [integer] | nil,
           geometry: map | nil,
           latlon_position: map | nil,
-          radar: [Wetterhaecker.Brightsky.RadarRecord.t()] | nil
+          radar: [RadarRecord.t()] | nil
         }
 
   defstruct [:bbox, :geometry, :latlon_position, :radar]
@@ -21,7 +23,7 @@ defmodule Wetterhaecker.Brightsky.RadarResponse do
       bbox: [:integer],
       geometry: :map,
       latlon_position: :map,
-      radar: [{Wetterhaecker.Brightsky.RadarRecord, :t}]
+      radar: [{RadarRecord, :t}]
     ]
   end
 end

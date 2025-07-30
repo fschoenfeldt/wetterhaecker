@@ -1,9 +1,16 @@
-defmodule Wetterhaecker.Brightsky.Internals do
+defmodule Wetterhaecker.Weather.Brightsky.Internals do
   @moduledoc """
   Provides API endpoints related to internals
   """
 
-  @default_client Wetterhaecker.Brightsky.Client
+  alias Wetterhaecker.Weather.Brightsky.Client
+  alias Wetterhaecker.Weather.Brightsky.HTTPValidationError
+  alias Wetterhaecker.Weather.Brightsky.Internals
+  alias Wetterhaecker.Weather.Brightsky.NotFoundResponse
+  alias Wetterhaecker.Weather.Brightsky.SourcesResponse
+  alias Wetterhaecker.Weather.Brightsky.SynopResponse
+
+  @default_client Client
 
   @doc """
   Weather sources (stations)
@@ -26,10 +33,10 @@ defmodule Wetterhaecker.Brightsky.Internals do
 
   """
   @spec get_sources(keyword) ::
-          {:ok, Wetterhaecker.Brightsky.SourcesResponse.t()}
+          {:ok, SourcesResponse.t()}
           | {:error,
-             Wetterhaecker.Brightsky.HTTPValidationError.t()
-             | Wetterhaecker.Brightsky.NotFoundResponse.t()}
+             HTTPValidationError.t()
+             | NotFoundResponse.t()}
   def get_sources(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -46,14 +53,14 @@ defmodule Wetterhaecker.Brightsky.Internals do
 
     client.request(%{
       args: [],
-      call: {Wetterhaecker.Brightsky.Internals, :get_sources},
+      call: {Internals, :get_sources},
       url: "/sources",
       method: :get,
       query: query,
       response: [
-        {200, {Wetterhaecker.Brightsky.SourcesResponse, :t}},
-        {404, {Wetterhaecker.Brightsky.NotFoundResponse, :t}},
-        {422, {Wetterhaecker.Brightsky.HTTPValidationError, :t}}
+        {200, {SourcesResponse, :t}},
+        {404, {NotFoundResponse, :t}},
+        {422, {HTTPValidationError, :t}}
       ],
       opts: opts
     })
@@ -108,10 +115,10 @@ defmodule Wetterhaecker.Brightsky.Internals do
 
   """
   @spec get_synop(keyword) ::
-          {:ok, Wetterhaecker.Brightsky.SynopResponse.t()}
+          {:ok, SynopResponse.t()}
           | {:error,
-             Wetterhaecker.Brightsky.HTTPValidationError.t()
-             | Wetterhaecker.Brightsky.NotFoundResponse.t()}
+             HTTPValidationError.t()
+             | NotFoundResponse.t()}
   def get_synop(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -128,14 +135,14 @@ defmodule Wetterhaecker.Brightsky.Internals do
 
     client.request(%{
       args: [],
-      call: {Wetterhaecker.Brightsky.Internals, :get_synop},
+      call: {Internals, :get_synop},
       url: "/synop",
       method: :get,
       query: query,
       response: [
-        {200, {Wetterhaecker.Brightsky.SynopResponse, :t}},
-        {404, {Wetterhaecker.Brightsky.NotFoundResponse, :t}},
-        {422, {Wetterhaecker.Brightsky.HTTPValidationError, :t}}
+        {200, {SynopResponse, :t}},
+        {404, {NotFoundResponse, :t}},
+        {422, {HTTPValidationError, :t}}
       ],
       opts: opts
     })

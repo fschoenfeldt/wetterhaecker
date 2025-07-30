@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.CurrentWeatherRecord do
+defmodule Wetterhaecker.Weather.Brightsky.CurrentWeatherRecord do
   @moduledoc """
   Provides struct and type for a CurrentWeatherRecord
   """

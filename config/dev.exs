@@ -11,8 +11,8 @@ config :logger, :console, format: "[$level] $message\n"
 config :oapi_generator,
   brightsky: [
     output: [
-      base_module: Wetterhaecker.Brightsky,
-      location: "lib/wetterhaecker/brightsky",
+      base_module: Wetterhaecker.Weather.Brightsky,
+      location: "lib/wetterhaecker/weather/brightsky",
       operation_subdirectory: "operations/",
       schema_subdirectory: "schemas/"
     ]

@@ -1,9 +1,18 @@
-defmodule Wetterhaecker.Brightsky.Operations do
+defmodule Wetterhaecker.Weather.Brightsky.Operations do
   @moduledoc """
   Provides API endpoints related to operations
   """
 
-  @default_client Wetterhaecker.Brightsky.Client
+  alias Wetterhaecker.Weather.Brightsky.AlertsResponse
+  alias Wetterhaecker.Weather.Brightsky.Client
+  alias Wetterhaecker.Weather.Brightsky.CurrentWeatherResponse
+  alias Wetterhaecker.Weather.Brightsky.HTTPValidationError
+  alias Wetterhaecker.Weather.Brightsky.NotFoundResponse
+  alias Wetterhaecker.Weather.Brightsky.Operations
+  alias Wetterhaecker.Weather.Brightsky.RadarResponse
+  alias Wetterhaecker.Weather.Brightsky.WeatherResponse
+
+  @default_client Client
 
   @doc """
   Alerts
@@ -46,24 +55,24 @@ defmodule Wetterhaecker.Brightsky.Operations do
 
   """
   @spec get_alerts(keyword) ::
-          {:ok, Wetterhaecker.Brightsky.AlertsResponse.t()}
+          {:ok, AlertsResponse.t()}
           | {:error,
-             Wetterhaecker.Brightsky.HTTPValidationError.t()
-             | Wetterhaecker.Brightsky.NotFoundResponse.t()}
+             HTTPValidationError.t()
+             | NotFoundResponse.t()}
   def get_alerts(opts \\ []) do
     client = opts[:client] || @default_client
     query = Keyword.take(opts, [:lat, :lon, :tz, :warn_cell_id])
 
     client.request(%{
       args: [],
-      call: {Wetterhaecker.Brightsky.Operations, :get_alerts},
+      call: {Operations, :get_alerts},
       url: "/alerts",
       method: :get,
       query: query,
       response: [
-        {200, {Wetterhaecker.Brightsky.AlertsResponse, :t}},
-        {404, {Wetterhaecker.Brightsky.NotFoundResponse, :t}},
-        {422, {Wetterhaecker.Brightsky.HTTPValidationError, :t}}
+        {200, {AlertsResponse, :t}},
+        {404, {NotFoundResponse, :t}},
+        {422, {HTTPValidationError, :t}}
       ],
       opts: opts
     })
@@ -112,10 +121,10 @@ defmodule Wetterhaecker.Brightsky.Operations do
 
   """
   @spec get_current_weather(keyword) ::
-          {:ok, Wetterhaecker.Brightsky.CurrentWeatherResponse.t()}
+          {:ok, CurrentWeatherResponse.t()}
           | {:error,
-             Wetterhaecker.Brightsky.HTTPValidationError.t()
-             | Wetterhaecker.Brightsky.NotFoundResponse.t()}
+             HTTPValidationError.t()
+             | NotFoundResponse.t()}
   def get_current_weather(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -133,14 +142,14 @@ defmodule Wetterhaecker.Brightsky.Operations do
 
     client.request(%{
       args: [],
-      call: {Wetterhaecker.Brightsky.Operations, :get_current_weather},
+      call: {Operations, :get_current_weather},
       url: "/current_weather",
       method: :get,
       query: query,
       response: [
-        {200, {Wetterhaecker.Brightsky.CurrentWeatherResponse, :t}},
-        {404, {Wetterhaecker.Brightsky.NotFoundResponse, :t}},
-        {422, {Wetterhaecker.Brightsky.HTTPValidationError, :t}}
+        {200, {CurrentWeatherResponse, :t}},
+        {404, {NotFoundResponse, :t}},
+        {422, {HTTPValidationError, :t}}
       ],
       opts: opts
     })
@@ -326,24 +335,24 @@ defmodule Wetterhaecker.Brightsky.Operations do
 
   """
   @spec get_radar(keyword) ::
-          {:ok, Wetterhaecker.Brightsky.RadarResponse.t()}
+          {:ok, RadarResponse.t()}
           | {:error,
-             Wetterhaecker.Brightsky.HTTPValidationError.t()
-             | Wetterhaecker.Brightsky.NotFoundResponse.t()}
+             HTTPValidationError.t()
+             | NotFoundResponse.t()}
   def get_radar(opts \\ []) do
     client = opts[:client] || @default_client
     query = Keyword.take(opts, [:bbox, :date, :distance, :format, :last_date, :lat, :lon, :tz])
 
     client.request(%{
       args: [],
-      call: {Wetterhaecker.Brightsky.Operations, :get_radar},
+      call: {Operations, :get_radar},
       url: "/radar",
       method: :get,
       query: query,
       response: [
-        {200, {Wetterhaecker.Brightsky.RadarResponse, :t}},
-        {404, {Wetterhaecker.Brightsky.NotFoundResponse, :t}},
-        {422, {Wetterhaecker.Brightsky.HTTPValidationError, :t}}
+        {200, {RadarResponse, :t}},
+        {404, {NotFoundResponse, :t}},
+        {422, {HTTPValidationError, :t}}
       ],
       opts: opts
     })
@@ -389,10 +398,10 @@ defmodule Wetterhaecker.Brightsky.Operations do
 
   """
   @spec get_weather(keyword) ::
-          {:ok, Wetterhaecker.Brightsky.WeatherResponse.t()}
+          {:ok, WeatherResponse.t()}
           | {:error,
-             Wetterhaecker.Brightsky.HTTPValidationError.t()
-             | Wetterhaecker.Brightsky.NotFoundResponse.t()}
+             HTTPValidationError.t()
+             | NotFoundResponse.t()}
   def get_weather(opts \\ []) do
     client = opts[:client] || @default_client
 
@@ -412,14 +421,14 @@ defmodule Wetterhaecker.Brightsky.Operations do
 
     client.request(%{
       args: [],
-      call: {Wetterhaecker.Brightsky.Operations, :get_weather},
+      call: {Operations, :get_weather},
       url: "/weather",
       method: :get,
       query: query,
       response: [
-        {200, {Wetterhaecker.Brightsky.WeatherResponse, :t}},
-        {404, {Wetterhaecker.Brightsky.NotFoundResponse, :t}},
-        {422, {Wetterhaecker.Brightsky.HTTPValidationError, :t}}
+        {200, {WeatherResponse, :t}},
+        {404, {NotFoundResponse, :t}},
+        {422, {HTTPValidationError, :t}}
       ],
       opts: opts
     })

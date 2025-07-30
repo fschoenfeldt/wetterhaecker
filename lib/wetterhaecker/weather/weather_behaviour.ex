@@ -1,6 +1,6 @@
-defmodule Wetterhaecker.Brightsky.WeatherBehaviour do
+defmodule Wetterhaecker.Weather.WeatherBehaviour do
   @moduledoc """
-  Behaviour for Brightsky API service.
+  Behaviour for Weather context.
   """
 
   @callback get_weather(Keyword.t()) :: {:ok, map()} | {:error, term()}

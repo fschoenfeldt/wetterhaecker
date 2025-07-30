@@ -1,14 +1,15 @@
-defmodule Wetterhaecker.Brightsky.Weather do
+defmodule Wetterhaecker.Weather do
   @moduledoc """
-  Service that wraps the automatically generated Brightsky API clients.
-  This service is designed to be mockable in tests.
+  Context that provides weather data for a specific location and date.
+
+  Can be mocked in tests.
   """
 
-  @behaviour Wetterhaecker.Brightsky.WeatherBehaviour
+  @behaviour Wetterhaecker.Weather.WeatherBehaviour
 
-  alias Wetterhaecker.Brightsky.Operations
+  alias Wetterhaecker.Weather.Brightsky.Operations
 
-  defp implementation, do: Application.get_env(:wetterhaecker, :brightsky_service, Operations)
+  defp implementation, do: Application.get_env(:wetterhaecker, :weather, Operations)
 
   @impl true
   @doc """

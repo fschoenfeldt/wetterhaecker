@@ -3,8 +3,8 @@ defmodule Wetterhaecker.Gpx.UtilsTest do
 
   import Hammox
 
-  alias Wetterhaecker.Brightsky.WeatherMock
   alias Wetterhaecker.Gpx.Utils
+  alias Wetterhaecker.Weather.WeatherMock
   alias WetterhaeckerWeb.Components.MapsLive.FormComponent.Form
 
   # Make sure all mocks defined via Hammox implement the behaviour they're mocking

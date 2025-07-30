@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.Source do
+defmodule Wetterhaecker.Weather.Brightsky.Source do
   @moduledoc """
   Provides struct and type for a Source
   """

@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.ValidationError do
+defmodule Wetterhaecker.Weather.Brightsky.ValidationError do
   @moduledoc """
   Provides struct and type for a ValidationError
   """

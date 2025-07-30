@@ -1,4 +1,4 @@
-defmodule Wetterhaecker.Brightsky.SynopRecord do
+defmodule Wetterhaecker.Weather.Brightsky.SynopRecord do
   @moduledoc """
   Provides struct and type for a SynopRecord
   """
