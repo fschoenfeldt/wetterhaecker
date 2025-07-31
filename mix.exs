@@ -83,8 +83,7 @@ defmodule Wetterhaecker.MixProject do
       {:quokka, "~> 2.7", only: [:dev, :test], runtime: false},
       {:hammox, "~> 0.7", only: [:test]},
       {:live_isolated_component, "~> 0.9.0", only: [:dev, :test]},
-      # FIXME: don't use branch version!
-      {:knigge, github: "fschoenfeldt/knigge", branch: "feature/update-2025"}
+      {:ex_knigge, "~> 2.0.0-rc.0"}
     ]
   end
 
