@@ -1,5 +1,9 @@
 # Wetterhaecker
 
+Wetterhacker is a tool that imports .gpx files, for example for hiking or cycling and displays the weather data for the route. It uses the [Brightsky API](http://brightsky.dev/) to fetch weather data and is built with [Phoenix Framework](https://www.phoenixframework.org/). Because of Brightsky, only german locations are supported at the moment.
+
+**live demo at: https://fschoenf.uber.space/wetterhaecker**
+
 ## Development
 
 1. Install requirements (see `.tool-versions`):
