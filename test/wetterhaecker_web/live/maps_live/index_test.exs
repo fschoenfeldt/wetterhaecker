@@ -11,7 +11,7 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
   setup :verify_on_exit!
 
   test "renders all components correctly", %{conn: conn} do
-    {:ok, _view, html} = live(conn, "/")
+    {:ok, _view, html} = live(conn, "/wetterhaecker")
 
     assert html =~ "id=\"map\""
     assert html =~ "id=\"chart\""
@@ -19,7 +19,7 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
   end
 
   test "mount/3 initializes the map with preset GPX data", %{conn: conn} do
-    {:ok, view, _html} = live(conn, "/")
+    {:ok, view, _html} = live(conn, "/wetterhaecker")
 
     # initially we use a preset GPX file
     {:ok, gpx} = Wetterhaecker.Gpx.get_from_preset()
@@ -42,7 +42,7 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
 
   describe "handle_info :form_submitted" do
     test "handles gpx error and displays flash message", %{conn: conn} do
-      {:ok, view, _html} = live(conn, "/")
+      {:ok, view, _html} = live(conn, "/wetterhaecker")
 
       form = %{}
       gpx_result = {:error, "reason"}
@@ -99,7 +99,7 @@ defmodule WetterhaeckerWeb.MapsLive.IndexTest do
            total_length: 100.0
          }}
 
-      {:ok, view, _html} = live(conn, "/")
+      {:ok, view, _html} = live(conn, "/wetterhaecker")
 
       # initial event when the view is mounted
       assert_push_event(view, "map:init", %{

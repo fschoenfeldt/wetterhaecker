@@ -10,14 +10,25 @@ defmodule Wetterhaecker.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      # https://github.com/lpil/mix-test.watch?tab=readme-ov-file#usage
-      preferred_cli_env: [
-        "test.watch": :test
-      ],
       dialyzer: [
-        plt_add_deps: :app_tree,
+        plt_add_apps: [:ex_unit],
         plt_core_path: "_build/plt_core",
         plt_file: {:no_warn, "_build/plts/dialyzer.plt"}
+      ]
+    ]
+  end
+
+  def cli do
+    [
+      # https://github.com/lpil/mix-test.watch?tab=readme-ov-file#usage
+      # https://hexdocs.pm/ex_check/readme.html#duplicate-builds
+      preferred_envs: [
+        check: :test,
+        credo: :test,
+        dialyzer: :test,
+        docs: :test,
+        format: :test,
+        "test.watch": :test
       ]
     ]
   end
@@ -66,8 +77,8 @@ defmodule Wetterhaecker.MixProject do
       {:salad_ui, "~> 0.14"},
       {:math, "~> 0.6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_check, "~> 0.16.0", only: [:dev], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
+      {:ex_check, "~> 0.16.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:quokka, "~> 2.7", only: [:dev, :test], runtime: false},
       {:hammox, "~> 0.7", only: [:test]},
@@ -87,7 +98,11 @@ defmodule Wetterhaecker.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.setup": [
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing",
+        "cmd npm install --prefix assets"
+      ],
       "assets.build": ["tailwind wetterhaecker", "esbuild wetterhaecker"],
       "assets.deploy": [
         "tailwind wetterhaecker --minify",
