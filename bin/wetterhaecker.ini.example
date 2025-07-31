@@ -1,0 +1,15 @@
+[program:wetterhaecker]
+command=/bin/bash ./server
+directory=/home/USER/wetterhaecker/_build/prod/rel/wetterhaecker/bin
+environment=
+    MIX_ENV="prod",
+    PORT=5001,
+    DATABASE_PATH=/home/USER/wetterhaecker/wetterhaecker_prod.db,
+    SECRET_KEY_BASE="!! generate with phx.gen.secret !!",
+    PHX_HOST=USER.uber.space,
+    # you might want to enable this on uberspace
+    # EXQLITE_USE_SYSTEM="1",
+    # EXQLITE_SYSTEM_CFLAGS="-I/usr/include",
+    # EXQLITE_SYSTEM_LDFLAGS="-L/lib64/sqlite -lsqlite3"
+autostart=yes
+autorestart=yes

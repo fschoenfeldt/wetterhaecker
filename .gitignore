@@ -1,5 +1,6 @@
 # The directory Mix will write compiled artifacts to.
 /_build/
+rel/linux_amd64/
 .elixir_ls/
 
 # If you run "mix test --cover", coverage assets end up here.
@@ -41,3 +42,5 @@ assets/coverage
 *.db
 *.db-*
 
+bin/wetterhaecker.ini
+.envrc.local

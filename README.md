@@ -1,22 +1,30 @@
 # Wetterhaecker
 
-## Setup
-
-```bash
-mix setup
-```
-
-## Start the application
-
-```bash
-iex -S mix phx.server
-```
-
-👉🏻 http://localhost:4000/
-
 ## Development
 
-### Start Livebook
+1. Install requirements (see `.tool-versions`):
+
+   - asdf
+   - Elixir
+   - Erlang
+   - Node.js
+
+2. Run Setup:
+
+   - ```bash
+     mix setup
+     ```
+
+3. Start application:
+
+   - ```bash
+     iex -S mix phx.server
+     ```
+   - 👉🏻 http://localhost:4000/wetterhaecker
+
+### Livebook
+
+Livebook is used to try out different backend contexts interactively.
 
 ```bash
 mix escript.install hex livebook
@@ -24,35 +32,31 @@ asdf reshim elixir
 livebook server livebooks/wetterhaecker.livemd
 ```
 
-### Start Brightsky API Mock
+### Weather Data Mock
 
-Start the application with alternative Brightsky Endpoint:
+By default, the application uses [the real Brightsky API](http://brightsky.dev/) for weather data. To use a mock server instead, you need to do the following steps:
 
-```bash
-BRIGHTSKY_BASE_URL=http://127.0.0.1:4010 iex -S mix phx.server
-```
+1. Start Prism Mock Server
 
-After that, you need to start the Prism Mock server:
+   1. using Docker
 
-#### Using Docker
+      - ```bash
+        docker run --init --rm -v $(pwd):/tmp/wetterhaecker -p 4010:4010 stoplight/prism:4 mock -h 0.0.0.0 "/tmp/wetterhaecker/priv/static/brightsky_openapi.json"
+        ```
 
-Start Prism Mock with Docker:
+   2. using [Prism Mock CLI](https://docs.stoplight.io/docs/prism/f51bcc80a02db-installation)
+      - ```bash
+        prism mock priv/static/brightsky_openapi.json
+        ```
 
-```bash
-docker run --init --rm -v $(pwd):/tmp/wetterhaecker -p 4010:4010 stoplight/prism:4 mock -h 0.0.0.0 "/tmp/wetterhaecker/priv/static/brightsky_openapi.json"
-```
+2. Set the `BRIGHTSKY_BASE_URL` environment variable to point to the mock server and start the application:
+   - ```bash
+     BRIGHTSKY_BASE_URL=http://127.0.0.1:4010 iex -S mix phx.server
+     ```
 
-#### Using Prism Mock CLI
+### Type Generation for Brightsky Types
 
-[install prism mock cli](https://docs.stoplight.io/docs/prism/f51bcc80a02db-installation) and start the mock server:
-
-```bash
-prism mock priv/static/brightsky_openapi.json
-```
-
-## Type Generation for Brightsky Types
-
-### Backend:
+#### Backend:
 
 ```bash
 # download openapi.json via curl
@@ -61,10 +65,26 @@ curl -o priv/static/brightsky_openapi.json https://api.brightsky.dev/openapi.jso
 mix api.gen brightsky priv/static/brightsky_openapi.json
 ```
 
-### Frontend:
+#### Frontend:
 
 If you need to generate types for Brightsky, [install the openapicmd tool](https://openapistack.co/docs/openapicmd/intro/) and run:
 
 ```bash
 openapi typegen https://api.brightsky.dev/openapi.json > assets/js/types/brightsky.d.ts
+```
+
+## Production
+
+### Hosting on [Uberspace](https://uberspace.de)
+
+1. copy `.envrc.example` to `.envrc.local` and adjust the values.
+2. copy `./bin/wetterhaecker.ini.example` to `./bin/wetterhaecker.ini` and adjust the values.
+3. run `./bin/deploy.sh` to deploy the application to your Uberspace server.
+
+### Building a Release using Docker
+
+There's a `Dockerfile` in the root of the project that can be used to build a production image of the application. Note that you need to have a server with the [same OS, version and architecture as the one you build the image on](https://hexdocs.pm/phoenix/releases.html).
+
+```bash
+docker buildx build --build-arg BUILDKIT_MULTI_PLATFORM=1 --platform linux/amd64 --target release-export --output type=local,dest=./rel .
 ```

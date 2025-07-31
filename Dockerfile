@@ -18,14 +18,18 @@ ARG DEBIAN_VERSION=bullseye-20250630-slim
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
-FROM ${BUILDER_IMAGE} as builder
+FROM ${BUILDER_IMAGE} AS builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+RUN apt-get update -y && apt-get install -y build-essential git nodejs npm \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
 WORKDIR /app
+
+# Set environment variables to reduce JIT compilation issues
+ENV ERL_FLAGS="+JMsingle true +A 1 +SDio 1"
+ENV ELIXIR_ERL_OPTIONS="+fnu"
 
 # install hex + rebar
 RUN mix local.hex --force && \
@@ -49,7 +53,13 @@ COPY priv priv
 
 COPY lib lib
 
+# copy assets folder
 COPY assets assets
+
+# run npm install inside assets directory
+WORKDIR "/app/assets"
+RUN npm install
+WORKDIR "/app"
 
 # compile assets
 RUN mix assets.deploy
@@ -62,6 +72,10 @@ COPY config/runtime.exs config/
 
 COPY rel rel
 RUN mix release
+
+# export release
+FROM scratch AS release-export
+COPY --from=builder /app/_build/prod/rel/wetterhaecker /
 
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
