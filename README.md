@@ -81,6 +81,8 @@ openapi typegen https://api.brightsky.dev/openapi.json > assets/js/types/brights
 2. copy `./bin/wetterhaecker.ini.example` to `./bin/wetterhaecker.ini` and adjust the values.
 3. run `./bin/deploy.sh` to deploy the application to your Uberspace server.
 
+After first deployment, you need to [open a web backend on uberspace](https://manual.uberspace.de/web-backends/#specific-path).
+
 ### Building a Release using Docker
 
 There's a `Dockerfile` in the root of the project that can be used to build a production image of the application. Note that you need to have a server with the [same OS, version and architecture as the one you build the image on](https://hexdocs.pm/phoenix/releases.html).

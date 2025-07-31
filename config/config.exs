@@ -52,7 +52,8 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Wetterhaecker.PubSub,
-  live_view: [signing_salt: "kXbCSxmh"]
+  live_view: [signing_salt: "kXbCSxmh"],
+  static_url: [path: "/wetterhaecker"]
 
 config :wetterhaecker,
   ecto_repos: [Wetterhaecker.Repo],

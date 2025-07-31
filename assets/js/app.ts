@@ -36,7 +36,7 @@ const Hooks = {
   Map,
 };
 
-const liveSocket = new LiveSocket("/live", Socket, {
+const liveSocket = new LiveSocket("/wetterhaecker/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: Hooks,

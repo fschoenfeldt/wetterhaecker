@@ -14,7 +14,7 @@ defmodule WetterhaeckerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", WetterhaeckerWeb do
+  scope "/wetterhaecker", WetterhaeckerWeb do
     pipe_through :browser
 
     # get "/", PageController, :home
@@ -35,7 +35,7 @@ defmodule WetterhaeckerWeb.Router do
     # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
 
-    scope "/dev" do
+    scope "/wetterhaecker/dev" do
       pipe_through :browser
 
       live_dashboard "/dashboard", metrics: WetterhaeckerWeb.Telemetry
