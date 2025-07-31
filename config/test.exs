@@ -20,12 +20,12 @@ config :wetterhaecker, Wetterhaecker.Repo,
   pool_size: 5,
   pool: Ecto.Adapters.SQL.Sandbox
 
+# Configure application to use mock BrightskyService for tests
+config :wetterhaecker, Wetterhaecker.Weather, Wetterhaecker.Weather.WeatherMock
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :wetterhaecker, WetterhaeckerWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "ixAIz6yaYNy65rs9NHxsSEtufw2WpRqzDVq2CC+G7VOmt8KSnPlnaEEIA9NthriT",
   server: false
-
-# Configure application to use mock BrightskyService for tests
-config :wetterhaecker, :weather, Wetterhaecker.Weather.WeatherMock
