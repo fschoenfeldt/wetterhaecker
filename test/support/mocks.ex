@@ -4,5 +4,5 @@ defmodule Wetterhaecker.Test.Mocks do
   """
 
   # Define mocks using Hammox
-  Hammox.defmock(Wetterhaecker.Weather.WeatherMock, for: Wetterhaecker.Weather.WeatherBehaviour)
+  Hammox.defmock(Wetterhaecker.Weather.WeatherMock, for: Wetterhaecker.Weather)
 end

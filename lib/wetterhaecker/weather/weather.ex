@@ -1,17 +1,10 @@
 defmodule Wetterhaecker.Weather do
   @moduledoc """
   Context that provides weather data for a specific location and date.
-
-  Can be mocked in tests.
   """
 
-  @behaviour Wetterhaecker.Weather.WeatherBehaviour
+  use Knigge, otp_app: :wetterhaecker, default: Wetterhaecker.Weather.Brightsky.Operations
 
-  alias Wetterhaecker.Weather.Brightsky.Operations
-
-  defp implementation, do: Application.get_env(:wetterhaecker, :weather, Operations)
-
-  @impl true
   @doc """
   Gets weather data for a specific location and date.
 
@@ -28,7 +21,5 @@ defmodule Wetterhaecker.Weather do
   - `{:ok, result}` on success
   - `{:error, reason}` on failure
   """
-  def get_weather(opts) do
-    implementation().get_weather(opts)
-  end
+  @callback get_weather(Keyword.t()) :: {:ok, map()} | {:error, term()}
 end
