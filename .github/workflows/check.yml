@@ -1,0 +1,33 @@
+name: check
+
+on: push
+
+jobs:
+  mix_check:
+    name: mix check
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Tools
+        uses: asdf-vm/actions/install@v3
+
+      - name: Cache Elixir Deps/Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+            assets/node_modules
+          key: elixir-deps-${{ runner.os }}-${{ hashFiles('mix.lock') }}-${{ hashFiles('.tool-versions') }}-${{ hashFiles('assets/package-lock.json') }}-${{ hashFiles('lib/**/*.ex', 'lib/**/*.*ex', 'config/*.exs', 'mix.exs') }}
+          restore-keys: |
+            elixir-deps-${{ runner.os }}-${{ hashFiles('mix.lock') }}-
+            elixir-deps-${{ runner.os }}
+
+      - name: Run setup
+        run: mix setup
+
+      - name: Run check
+        run: mix check
