@@ -14,7 +14,7 @@
   ## list of tools (see `mix check` docs for a list of default curated tools)
   tools: [
     ## curated tools may be disabled (e.g. the check for compilation warnings)
-    {:gettext, false}
+    {:gettext, false},
 
     ## ...or have command & args adjusted (e.g. enable skip comments for sobelow)
     # {:sobelow, "mix sobelow --exit --skip"},
@@ -28,5 +28,6 @@
     ## custom new tools may be added (Mix tasks or arbitrary commands)
     # {:my_task, "mix my_task", env: %{"MIX_ENV" => "prod"}},
     # {:my_tool, ["my_tool", "arg with spaces"]}
+    {:knigge_verify, ["mix", "knigge.verify"]}
   ]
 ]
