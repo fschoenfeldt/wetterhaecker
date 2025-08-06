@@ -9,18 +9,23 @@ defmodule Wetterhaecker.Gpx do
 
   alias Wetterhaecker.Gpx.Calculate
 
+  # TODO: create proper struct
   @type gpx_with_length() :: %{points: list(), total_length: float()}
 
   @doc """
   Reads a preset GPX file from the `priv/static/gpx` directory and returns the points and total length.
   """
-  @spec get_from_path(file_path :: String.t()) :: {:ok, gpx_with_length()} | {:error, binary()}
+  @spec get_from_preset(preset_file_name :: String.t()) :: {:ok, gpx_with_length()} | {:error, binary()}
   def get_from_preset(preset_file_name \\ "Langeoog.gpx") do
     [:code.priv_dir(:wetterhaecker), "static", "gpx", preset_file_name]
     |> Path.join()
     |> get_from_path()
   end
 
+  @doc """
+  Reads a GPX file from the given file path and returns the points and total length.
+  """
+  @spec get_from_path(file_path :: String.t()) :: {:ok, gpx_with_length()} | {:error, binary()}
   def get_from_path(file_path) when is_binary(file_path) do
     # credo:disable-for-next-line
     with {:ok, _gpx} = parse_result <- parse_gpx(file_path) do

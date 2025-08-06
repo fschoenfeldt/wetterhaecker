@@ -52,6 +52,53 @@ defmodule Wetterhaecker.Gpx.UtilsTest do
     end
   end
 
+  describe "estimated_route_time_hours/2" do
+    test "works with gpx and form" do
+      gpx = %{total_length: 12_345.6789}
+
+      form =
+        Form.changeset(%Form{}, %{
+          "average_speed" => 20.0,
+          "sampling_rate" => 60
+        })
+        |> Phoenix.Component.to_form()
+
+      actual = Utils.estimated_route_time(gpx, form)
+      expected = 37.0370367
+
+      assert actual == expected
+    end
+
+    test "works with float" do
+      actual = Utils.estimated_route_time(12_345.6789, 10.0)
+      expected = 74.0740734
+
+      assert actual == expected
+    end
+
+    test "raises on integer" do
+      assert_raise FunctionClauseError, fn ->
+        Utils.estimated_route_time_hours(12_345, 10)
+      end
+    end
+  end
+
+  describe "hours_humanized/1" do
+    test "works with hours" do
+      actual = Utils.hours_humanized(1.25)
+      expected = "1 hour, 15 minutes"
+
+      assert actual == expected
+    end
+
+    test "truncates seconds" do
+      actual = Utils.hours_humanized(1.26)
+      expected = "1 hour, 15 minutes"
+
+      assert actual == expected
+    end
+  end
+
   describe "wrap_with_index/1" do
     test "wraps points with index" do
       points = [

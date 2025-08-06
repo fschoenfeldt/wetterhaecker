@@ -3,6 +3,8 @@ defmodule Wetterhaecker.Gpx.Utils do
   Helper functions for GPX calculations and weather data.
   """
 
+  use Timex
+
   alias GpxEx.TrackPoint
   alias Phoenix.HTML.Form
   # TODO: dont' use Brightsky directly!
@@ -47,6 +49,18 @@ defmodule Wetterhaecker.Gpx.Utils do
 
   def estimated_route_time_hours(total_length, average_speed) when is_float(total_length) and is_float(average_speed),
     do: (total_length / 1000 / average_speed) |> Float.ceil(2)
+
+  @doc """
+  Returns a humanized string of the estimated route time in hours, truncated to minutes (no seconds).
+  """
+  @spec hours_humanized(float()) :: String.t()
+  def hours_humanized(estimated_route_time_hours) when is_float(estimated_route_time_hours) do
+    minutes = trunc(estimated_route_time_hours * 60)
+
+    minutes
+    |> Timex.Duration.from_minutes()
+    |> Timex.format_duration(:humanized)
+  end
 
   @doc """
   Wraps GPX track points with an index.
