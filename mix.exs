@@ -83,7 +83,8 @@ defmodule Wetterhaecker.MixProject do
       {:quokka, "~> 2.7", only: [:dev, :test], runtime: false},
       {:hammox, "~> 0.7", only: [:test]},
       {:live_isolated_component, "~> 0.9.0", only: [:dev, :test]},
-      {:ex_knigge, "~> 2.0.0-rc.0"}
+      {:ex_knigge, "~> 2.0.0-rc.0"},
+      {:timex, "~> 3.0"}
     ]
   end
 

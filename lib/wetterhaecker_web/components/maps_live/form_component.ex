@@ -157,7 +157,9 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
         <hr />
         <fieldset class="relative space-y-4 flex pb-12">
           <%= with route_length = Utils.route_length_km(@gpx),
-                   calc_hrs <- Utils.estimated_route_time_hours(@gpx, @form) do %>
+                   humanized_hrs = @gpx
+                                 |> Utils.estimated_route_time_hours(@form)
+                                 |> Utils.hours_humanized() do %>
             <div class="md:flex gap-x-4">
               <.form_item>
                 <.form_label>Total Route length (km)</.form_label>
@@ -166,10 +168,9 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
                 </.form_control>
               </.form_item>
               <.form_item>
-                <.form_label>Estimated time (hrs)</.form_label>
+                <.form_label>Estimated duration</.form_label>
                 <.form_control>
-                  <%!-- # TODO: display as ##h ##mins instead. --%>
-                  <.input name="calc_hrs" type="number" value={calc_hrs} disabled />
+                  <.input name="humanized_hrs" type="text" value={humanized_hrs} disabled />
                 </.form_control>
               </.form_item>
             </div>
