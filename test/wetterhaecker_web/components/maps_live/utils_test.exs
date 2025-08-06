@@ -44,7 +44,6 @@ defmodule WetterhaeckerWeb.Components.MapsLive.UtilsTest do
 
       actual = Utils.add_time_and_weather(form, gpx)
 
-      # TODO DRY: these mock points are used in multiple tests, consider moving to a helper function
       expected = [
         %{
           weather: %{
