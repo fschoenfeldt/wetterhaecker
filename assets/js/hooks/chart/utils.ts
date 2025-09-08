@@ -15,24 +15,16 @@ export const drawHighChart = ({
       type: "line",
     },
     title: {
-      text: `Temperature forecast, starting at ${new Date(
+      text: `Temperature forecast, starting at ${dateToLocalTimeString(
         weatherPoints[0].date
-      ).toLocaleTimeString("de-DE", {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "UTC",
-      })}`,
+      )}`,
     },
     xAxis: {
       categories: weatherPoints.map((point) => {
         // Assume point.date is in MESZ (+02:00)
         const date = new Date(point.date);
 
-        return date.toLocaleTimeString("de-DE", {
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "UTC",
-        });
+        return dateToLocalTimeString(date);
       }),
     },
     yAxis: [
@@ -172,5 +164,13 @@ function onPointClicked({ that }: OnPointClickedParams) {
 
   window.emitter.emit("chart:pointClicked", {
     x,
+  });
+}
+
+function dateToLocalTimeString(dateTime: number | string | Date): string {
+  return new Date(dateTime).toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    // timeZone: "UTC",
   });
 }
