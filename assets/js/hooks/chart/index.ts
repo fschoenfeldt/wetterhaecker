@@ -1,7 +1,7 @@
 import { Chart } from "highcharts";
 import { Hook, ViewHookInterface } from "phoenix_live_view";
-import { drawWeatherUpdate } from "./chart/eventHandler";
-import { registerLiveViewEvent } from "../events";
+import { drawWeatherUpdate } from "./eventHandler";
+import { registerLiveViewEvent } from "../../events";
 
 export interface ChartHookInterface extends ViewHookInterface {
   chart: Chart | null;

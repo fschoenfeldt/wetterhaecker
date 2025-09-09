@@ -9,7 +9,7 @@ import {
 } from "./utils";
 import { filterWeatherTrackPoints } from "../../trackpoints";
 import { buildEvent } from "../../events";
-import { MapHookInterface } from "../map";
+import { MapHookInterface } from ".";
 
 interface MapInitPayload {
   initial: {

@@ -1,4 +1,4 @@
-import { ChartHookInterface } from "../chart";
+import { ChartHookInterface } from ".";
 import { drawHighChart } from "./utils";
 import {
   filterWeatherTrackPoints,

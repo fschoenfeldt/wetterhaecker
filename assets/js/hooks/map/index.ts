@@ -2,13 +2,9 @@ import leaflet from "leaflet";
 
 import { Chart } from "highcharts";
 import { Hook, ViewHookInterface } from "phoenix_live_view";
-import {
-  drawGpxFileUpdate,
-  drawWeatherUpdate,
-  mapInit,
-} from "./map/eventHandler";
-import { registerLiveViewEvent } from "../events";
-import { GpxExTrackPoint } from "../trackpoints";
+import { drawGpxFileUpdate, drawWeatherUpdate, mapInit } from "./eventHandler";
+import { registerLiveViewEvent } from "../../events";
+import { GpxExTrackPoint } from "../../trackpoints";
 
 export interface MapHookInterface extends ViewHookInterface {
   map: leaflet.Map | null;

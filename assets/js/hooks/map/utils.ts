@@ -1,7 +1,7 @@
 import { default as L, default as leaflet } from "leaflet";
 import { WeatherRecord } from "../../types/brightsky";
 import { GpxExTrackPoint, TrackPointWithWeather } from "../../trackpoints";
-import { MapHookInterface } from "../map";
+import { MapHookInterface } from ".";
 
 export const weatherMarkers = (
   weatherPoints: TrackPointWithWeather[]
