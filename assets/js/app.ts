@@ -22,7 +22,7 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "topbar";
 
-import { registerEvents } from "./hooks/event";
+import { registerEvents } from "./events";
 import Hooks from "./hooks/hooks";
 
 const csrfToken = document

@@ -7,7 +7,7 @@ import {
   drawWeatherUpdate,
   mapInit,
 } from "./map/eventHandler";
-import { registerLiveViewEvent } from "./event";
+import { registerLiveViewEvent } from "../events";
 import { GpxExTrackPoint } from "../trackpoints";
 
 export interface MapHookInterface extends ViewHookInterface {

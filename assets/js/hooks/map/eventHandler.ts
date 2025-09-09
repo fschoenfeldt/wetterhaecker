@@ -8,7 +8,7 @@ import {
   weatherMarkers,
 } from "./utils";
 import { filterWeatherTrackPoints } from "../../trackpoints";
-import { buildEvent } from "../event";
+import { buildEvent } from "../../events";
 import { MapHookInterface } from "../map";
 
 interface MapInitPayload {
