@@ -22,19 +22,12 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "topbar";
 
-import mitt, { Emitter } from "mitt";
-import Chart from "./hooks/chart";
-import { Events } from "./hooks/event";
-import Map from "./hooks/map";
+import { registerEvents } from "./hooks/event";
+import Hooks from "./hooks/hooks";
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");
-
-const Hooks = {
-  Chart,
-  Map,
-};
 
 const liveSocket = new LiveSocket("/wetterhaecker/live", Socket, {
   longPollFallbackMs: 2500,
@@ -60,14 +53,7 @@ liveSocket.connect();
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket;
 
-declare global {
-  interface Window {
-    emitter: Emitter<Events>;
-  }
-}
-
-const emitter: Emitter<Events> = mitt<Events>();
-window.emitter = emitter;
+registerEvents(window);
 
 // Allows to execute JS commands from the server
 window.addEventListener("phx:js-exec", (event) => {
