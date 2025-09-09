@@ -22,8 +22,8 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import topbar from "topbar";
 
-import { registerEvents } from "./hooks/event";
-import Hooks from "./hooks/hooks";
+import { registerEvents } from "./events";
+import Hooks from "./hooks";
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")

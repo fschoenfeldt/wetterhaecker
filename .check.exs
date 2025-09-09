@@ -28,6 +28,7 @@
     ## custom new tools may be added (Mix tasks or arbitrary commands)
     # {:my_task, "mix my_task", env: %{"MIX_ENV" => "prod"}},
     # {:my_tool, ["my_tool", "arg with spaces"]}
-    {:knigge_verify, ["mix", "knigge.verify"]}
+    {:knigge_verify, ["mix", "knigge.verify"]},
+    {:npm_lint, "npm run lint --prefix assets"}
   ]
 ]

@@ -1,10 +1,10 @@
-import { ChartHookInterface } from "../chart";
+import { ChartHookInterface } from ".";
 import { drawHighChart } from "./utils";
 import {
   filterWeatherTrackPoints,
   TrackPointWithMaybeWeather,
 } from "../../trackpoints";
-import { buildEvent } from "../event";
+import { buildEvent } from "../../events";
 
 interface DrawChartUpdatePayload {
   points: TrackPointWithMaybeWeather[];
