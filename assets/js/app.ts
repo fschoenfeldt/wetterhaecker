@@ -25,6 +25,20 @@ import topbar from "topbar";
 import { registerEvents } from "./events";
 import Hooks from "./hooks";
 
+// Salad UI component side-effect imports
+import "salad_ui/components/dialog";
+import "salad_ui/components/select";
+import "salad_ui/components/tabs";
+import "salad_ui/components/radio_group";
+import "salad_ui/components/popover";
+import "salad_ui/components/hover-card";
+import "salad_ui/components/collapsible";
+import "salad_ui/components/tooltip";
+import "salad_ui/components/accordion";
+import "salad_ui/components/slider";
+import "salad_ui/components/switch";
+import "salad_ui/components/dropdown_menu";
+
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content");

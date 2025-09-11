@@ -74,7 +74,7 @@ defmodule Wetterhaecker.MixProject do
       {:oapi_generator, "~> 0.2.0", only: :dev, runtime: false},
       {:httpoison, "~> 2.0"},
       {:gpx_ex, github: "caspg/gpx_ex", tag: "0.5.0"},
-      {:salad_ui, "~> 0.14"},
+      {:salad_ui, "1.0.0-beta.3"},
       {:math, "~> 0.6.0"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_check, "~> 0.16.0", only: [:dev, :test], runtime: false},
@@ -84,7 +84,8 @@ defmodule Wetterhaecker.MixProject do
       {:hammox, "~> 0.7", only: [:test]},
       {:live_isolated_component, "~> 0.9.0", only: [:dev, :test]},
       {:ex_knigge, "~> 2.0.0-rc.0"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:doctor, "~> 0.22.0", only: [:dev, :test]}
     ]
   end
 

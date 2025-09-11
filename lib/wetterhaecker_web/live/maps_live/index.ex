@@ -27,6 +27,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         :form,
         to_form(changeset)
       )
+      |> assign(:has_weather_data?, false)
 
     if connected?(socket) do
       {:ok,
@@ -53,7 +54,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     >
       <div class="h-full w-full lg:col-span-5">
         <.live_component module={MapComponent} id="map" />
-        <.live_component module={ChartComponent} id="chart" />
+        <.live_component module={ChartComponent} has_weather_data?={@has_weather_data?} id="chart" />
       </div>
 
       <.live_component module={FormComponent} id="form" form={@form} gpx={@gpx} />
@@ -86,15 +87,22 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       |> assign(:gpx, gpx)
       |> assign(:form, form)
 
+    # TODO what happens if something goes wrong here? we only handle success/empty list
     # Calculate weather points
     weather_points = Utils.add_time_and_weather(socket.assigns.form, socket.assigns.gpx)
 
-    # send updates to child components
     socket =
-      socket
-      |> MapComponent.update_gpx_points(socket.assigns.gpx.points)
-      |> MapComponent.update_weather_points(weather_points)
-      |> ChartComponent.update_weather_data(weather_points)
+      if weather_points == [] do
+        put_flash(socket, :error, "Failed to retrieve weather data. Please try again.")
+      else
+        socket = assign(socket, :has_weather_data?, true)
+
+        # send updates to child components
+        socket
+        |> MapComponent.update_gpx_points(socket.assigns.gpx.points)
+        |> MapComponent.update_weather_points(weather_points)
+        |> ChartComponent.update_weather_data(weather_points)
+      end
 
     {:noreply, socket}
   end

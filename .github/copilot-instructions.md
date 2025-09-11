@@ -9,3 +9,9 @@ Try documenting functions with `@doc` and `@spec` attributes, providing clear de
 When writing tests, name two variables: `actual` and `expected` and compare them using `assert actual == expected`, when appropriate.
 
 If you want to run unit tests or dialyzer, use the `mix check` because it runs all quality checks at once.
+
+In case you encounter formatting issues, try running `mix check --fix` to automatically fix them.
+
+When possible, use "Salad UI" for UI components: https://salad-storybook.fly.dev/, for example for a dropdown menu, use: https://salad-storybook.fly.dev/salad_ui_component/dropdown_menu
+
+Access those Salad UI components directly, like this `SaladUI.DropdownMenu.dropdown_menu`
