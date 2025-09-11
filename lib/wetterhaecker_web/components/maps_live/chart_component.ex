@@ -17,9 +17,54 @@ defmodule WetterhaeckerWeb.Components.MapsLive.ChartComponent do
         id="chart"
       />
   """
+  attr :has_weather_data?, :boolean, default: false
+
   def render(assigns) do
     ~H"""
-    <div id="chart" phx-hook="Chart" phx-update="ignore" class="h-[50vh] lg:h-64 p-2">
+    <div id="chart" phx-hook="Chart" class="h-[50vh] lg:h-64 p-2 flex flex-col">
+      <div :if={@has_weather_data?} class="flex justify-end mb-2">
+        <.chart_dropdown />
+      </div>
+      <.chart_canvas />
+    </div>
+    """
+  end
+
+  defp chart_dropdown(assigns) do
+    ~H"""
+    <SaladUI.DropdownMenu.dropdown_menu id="chart-type-select">
+      <SaladUI.DropdownMenu.dropdown_menu_trigger>
+        <.button variant="outline">
+          <span data-chart-current-label>Temperature</span>
+        </.button>
+      </SaladUI.DropdownMenu.dropdown_menu_trigger>
+      <SaladUI.DropdownMenu.dropdown_menu_content class="w-44">
+        <SaladUI.DropdownMenu.dropdown_menu_label>
+          Chart Type
+        </SaladUI.DropdownMenu.dropdown_menu_label>
+        <SaladUI.DropdownMenu.dropdown_menu_separator />
+        <SaladUI.DropdownMenu.dropdown_menu_group data-chart-mode-items>
+          <SaladUI.DropdownMenu.dropdown_menu_item data-chart-mode="temperature" value="temperature">
+            Temperature
+          </SaladUI.DropdownMenu.dropdown_menu_item>
+          <SaladUI.DropdownMenu.dropdown_menu_item
+            data-chart-mode="precipitation"
+            value="precipitation"
+          >
+            Precipitation
+          </SaladUI.DropdownMenu.dropdown_menu_item>
+          <SaladUI.DropdownMenu.dropdown_menu_item data-chart-mode="wind" value="wind">
+            Wind
+          </SaladUI.DropdownMenu.dropdown_menu_item>
+        </SaladUI.DropdownMenu.dropdown_menu_group>
+      </SaladUI.DropdownMenu.dropdown_menu_content>
+    </SaladUI.DropdownMenu.dropdown_menu>
+    """
+  end
+
+  defp chart_canvas(assigns) do
+    ~H"""
+    <div id="chart-canvas" phx-update="ignore" class="flex-1">
       <div class="flex items-center justify-center h-full bg-gray-50">
         <p class="text-center text-gray-500">
           Weather data will be displayed here after you submit the form.

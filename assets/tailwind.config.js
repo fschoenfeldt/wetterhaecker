@@ -11,6 +11,7 @@ module.exports = {
     "./js/**/*.ts",
     "../lib/wetterhaecker_web.ex",
     "../lib/wetterhaecker_web/**/*.*ex",
+    "../deps/salad_ui/lib/**/*.ex",
   ],
   theme: {
     extend: {

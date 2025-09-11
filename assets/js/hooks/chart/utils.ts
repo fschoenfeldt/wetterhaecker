@@ -1,164 +1,153 @@
 import Highcharts from "highcharts";
 import { TrackPointWithWeather } from "../../trackpoints";
 
+export type ChartMode = "temperature" | "precipitation" | "wind";
+
 interface DrawHighChartParams {
-  el: string;
+  el?: string;
   weatherPoints: TrackPointWithWeather[];
+  mode: ChartMode;
 }
 
 export const drawHighChart = ({
-  el = "chart",
+  el = "chart-canvas",
   weatherPoints,
+  mode,
 }: DrawHighChartParams) => {
-  return Highcharts.chart(
-    el,
-    {
-      chart: {
-        type: "line",
-      },
-      title: {
-        text: `Temperature forecast, starting at ${dateToLocalTimeString(
-          weatherPoints[0].date
-        )}`,
-      },
-      xAxis: {
-        categories: weatherPoints.map((point) => {
-          // Assume point.date is in MESZ (+02:00)
-          const date = new Date(point.date);
+  const categories = weatherPoints.map((point) =>
+    dateToLocalTimeString(new Date(point.date))
+  );
 
-          return dateToLocalTimeString(date);
-        }),
-      },
-      yAxis: [
-        {
-          // Primary yAxis
-          title: { text: "Temperature (°C)" },
-        },
-        {
-          // Secondary yAxis
-          title: { text: "Precipitation Probability (%)" },
-          min: 0,
-          max: 100,
-          opposite: true,
-        },
-        {
-          // third axis for precipitation amount
-          title: { text: "Precipitation Amount (mm)" },
-          min: 0,
-          max: 5,
-          // opposite: true,
-        },
-        {
-          // Fourth yAxis for wind speed
-          title: { text: "Wind Speed (m/s)" },
-          min: 0,
-          opposite: true,
-        },
-      ],
-      plotOptions: {
-        series: {
-          point: {
-            events: {
-              click: function (event) {
-                onPointClicked({
-                  event,
-                  that: this,
-                });
-              },
+  const base: Highcharts.Options = {
+    chart: { type: mode === "precipitation" ? "column" : "line" },
+    title: {
+      text: `${titleForMode(mode)} (start ${dateToLocalTimeString(
+        weatherPoints[0].date
+      )})`,
+    },
+    xAxis: { categories },
+    plotOptions: {
+      series: {
+        point: {
+          events: {
+            click: function (event) {
+              onPointClicked({ event, that: this });
             },
           },
         },
-      },
-      series: [
-        {
-          name: "Temperature (°C)",
-          type: "spline",
-          color: "#ff5733",
-          data: weatherPoints.map((point) => {
-            return point.weather.weather.temperature ?? null;
-          }),
-        },
-        {
-          name: "Precipitation Probability (%)",
-          type: "column",
-          color: "rgba(0, 123, 255, 0.3)",
-          data: weatherPoints.map((point) => {
-            return point.weather.weather.precipitation_probability ?? null;
-          }),
-          yAxis: 1,
-        },
-        {
-          name: "Precipitation Amount (mm)",
-          color: "rgba(0, 123, 255, 0.7)",
-          type: "column",
-          data: weatherPoints.map((point) => {
-            return point.weather.weather.precipitation ?? null;
-          }),
-          yAxis: 2,
-        },
-        {
-          name: "Wind Speed (m/s)",
-          type: "spline",
-          color: "#28a745",
-          data: weatherPoints.map((point) => {
-            return point.weather.weather.wind_speed ?? null;
-          }),
-          yAxis: 3,
-          visible: false,
-        },
-      ],
-      responsive: {
-        rules: [
-          {
-            condition: {
-              maxWidth: 500, // z.B. für Smartphones
-            },
-            chartOptions: {
-              xAxis: {
-                labels: {
-                  style: {
-                    fontSize: "10px",
-                  },
-                  rotation: -45, // optional: Labels schräg stellen
-                },
-                title: { text: null }, // Achsentitel ausblenden
-              },
-              yAxis: [
-                {
-                  // Temperatur
-                  title: { text: undefined },
-                  labels: { style: { fontSize: "10px" } },
-                },
-                {
-                  // Niederschlagswahrscheinlichkeit
-                  title: { text: undefined },
-                  labels: { style: { fontSize: "10px" } },
-                },
-                {
-                  // Niederschlagsmenge
-                  title: { text: undefined },
-                  labels: { style: { fontSize: "10px" } },
-                },
-                {
-                  // Wind
-                  title: { text: undefined },
-                  labels: { style: { fontSize: "10px" } },
-                },
-              ],
-              legend: {
-                layout: "vertical",
-                // enabled: false, // optional: Legende ausblenden
-              },
-            },
-          },
-        ],
       },
     },
-    // have to do this here, otherwise fn overload will not be detected.
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    () => {}
-  );
+    responsive: { rules: responsiveRules() },
+  };
+
+  switch (mode) {
+    case "temperature":
+      return Highcharts.chart(el, {
+        ...base,
+        yAxis: { title: { text: "Temperature (°C)" } },
+        series: [
+          {
+            name: "Temperature (°C)",
+            type: "spline",
+            color: "#ff5733",
+            data: weatherPoints.map(
+              (p) => p.weather.weather.temperature ?? null
+            ),
+          },
+        ],
+      });
+    case "precipitation":
+      return Highcharts.chart(el, {
+        ...base,
+        yAxis: [
+          { title: { text: "Precipitation Amount (mm)" }, min: 0 },
+          {
+            title: { text: "Probability (%)" },
+            min: 0,
+            max: 100,
+            opposite: true,
+          },
+        ],
+        series: [
+          {
+            name: "Amount (mm)",
+            type: "column",
+            color: "rgba(0,123,255,0.7)",
+            data: weatherPoints.map(
+              (p) => p.weather.weather.precipitation ?? null
+            ),
+          },
+          {
+            name: "Probability (%)",
+            type: "spline",
+            yAxis: 1,
+            color: "#0056b3",
+            data: weatherPoints.map(
+              (p) => p.weather.weather.precipitation_probability ?? null
+            ),
+          },
+        ],
+      });
+    case "wind":
+      return Highcharts.chart(el, {
+        ...base,
+        yAxis: [
+          { title: { text: "Wind Speed (m/s)" }, min: 0 },
+          {
+            title: { text: "Direction (°)" },
+            min: 0,
+            max: 360,
+            opposite: true,
+          },
+        ],
+        series: [
+          {
+            name: "Speed (m/s)",
+            type: "spline",
+            color: "#28a745",
+            data: weatherPoints.map(
+              (p) => p.weather.weather.wind_speed ?? null
+            ),
+          },
+          {
+            name: "Direction (°)",
+            type: "line",
+            yAxis: 1,
+            color: "#6c757d",
+            data: weatherPoints.map(
+              (p) => p.weather.weather.wind_direction ?? null
+            ),
+          },
+        ],
+      });
+  }
 };
+
+function titleForMode(mode: ChartMode) {
+  switch (mode) {
+    case "temperature":
+      return "Temperature";
+    case "precipitation":
+      return "Precipitation";
+    case "wind":
+      return "Wind";
+  }
+}
+
+function responsiveRules(): Highcharts.ResponsiveRulesOptions[] {
+  return [
+    {
+      condition: { maxWidth: 500 },
+      chartOptions: {
+        xAxis: {
+          labels: { style: { fontSize: "10px" }, rotation: -45 },
+          title: { text: null },
+        },
+        legend: { layout: "vertical" },
+      },
+    },
+  ];
+}
 
 interface OnPointClickedParams {
   event: Highcharts.PointClickEventObject;

@@ -13,5 +13,18 @@ defmodule WetterhaeckerWeb.Components.MapsLive.ChartComponentTest do
 
       assert actual =~ ~s(id="chart" phx-hook="Chart")
     end
+
+    test "shows dropdown when has weather data" do
+      actual = render_component(ChartComponent, has_weather_data?: true)
+
+      assert actual =~ ~s(id="chart-type-select")
+      assert actual =~ ~r/Temperature.*Precipitation.*Wind/s
+    end
+
+    test "hides dropdown when no weather data" do
+      actual = render_component(ChartComponent, has_weather_data?: false)
+
+      refute actual =~ ~s(id="chart-type-select")
+    end
   end
 end
