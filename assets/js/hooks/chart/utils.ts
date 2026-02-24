@@ -23,7 +23,6 @@ export const drawHighChart = ({
       },
       xAxis: {
         categories: weatherPoints.map((point) => {
-          // Assume point.date is in MESZ (+02:00)
           const date = new Date(point.date);
 
           return dateToLocalTimeString(date);
@@ -177,6 +176,6 @@ function dateToLocalTimeString(dateTime: number | string | Date): string {
   return new Date(dateTime).toLocaleTimeString("de-DE", {
     hour: "2-digit",
     minute: "2-digit",
-    // timeZone: "UTC",
+    timeZone: "UTC",
   });
 }

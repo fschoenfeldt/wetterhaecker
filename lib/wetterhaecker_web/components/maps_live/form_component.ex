@@ -55,13 +55,12 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   def mount(socket) do
     # Initialize form with default values
     now = DateTime.utc_now()
-    two_hours_later = DateTime.add(now, 2, :hour)
 
     changeset =
       Form.changeset(%Form{}, %{
         "average_speed" => 20.0,
         "sampling_rate" => 20,
-        "start_date_time" => two_hours_later
+        "start_date_time" => now
       })
 
     socket =
@@ -121,7 +120,7 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
             <.input type="datetime-local" field={@form[:start_date_time]} required />
           </.form_control>
           <.form_description>
-            The date and time when you start your route, timezone is MESZ (+02:00).
+            The date and time when you start your route, in UTC. Convert from your local time if needed.
           </.form_description>
         </.form_item>
         <div class="md:flex gap-x-4">

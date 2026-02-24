@@ -14,7 +14,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
       FormComponent.Form.changeset(%FormComponent.Form{}, %{
         "average_speed" => 20.0,
         "sampling_rate" => 20,
-        "start_date_time" => DateTime.utc_now() |> DateTime.add(2, :hour)
+        "start_date_time" => DateTime.utc_now()
       })
 
     # initially we use a preset GPX file
