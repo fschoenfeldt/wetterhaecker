@@ -176,6 +176,5 @@ function dateToLocalTimeString(dateTime: number | string | Date): string {
   return new Date(dateTime).toLocaleTimeString("de-DE", {
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "UTC",
   });
 }

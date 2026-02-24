@@ -117,10 +117,10 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
             Start Date/Time
           </.form_label>
           <.form_control>
-            <.input type="datetime-local" field={@form[:start_date_time]} required />
+            <.input type="datetime-local" field={@form[:start_date_time]} required phx-hook="DatetimeLocal" />
           </.form_control>
           <.form_description>
-            The date and time when you start your route, in UTC. Convert from your local time if needed.
+            The date and time when you start your route (your local time).
           </.form_description>
         </.form_item>
         <div class="md:flex gap-x-4">
@@ -178,6 +178,7 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
             </legend>
           <% end %>
         </fieldset>
+        <input type="hidden" id="form_timezone_offset" name="form[timezone_offset]" value="0" />
         <div class="w-full flex flex-row-reverse">
           <.button type="submit" phx-disable-with="Saving...">
             Get Weather!!1
@@ -204,8 +205,16 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   # and sends events to update the map and chart components.
   @impl true
   def handle_event("save", %{"form" => form_params}, socket) do
+    timezone_offset_minutes =
+      form_params
+      |> Map.get("timezone_offset", "0")
+      |> String.to_integer()
+
     changeset =
       Form.changeset(%Form{}, form_params)
+      |> Ecto.Changeset.update_change(:start_date_time, fn dt ->
+        DateTime.add(dt, timezone_offset_minutes, :minute)
+      end)
 
     # Process form data
     if changeset.valid? do
