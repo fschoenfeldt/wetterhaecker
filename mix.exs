@@ -84,7 +84,8 @@ defmodule Wetterhaecker.MixProject do
       {:hammox, "~> 0.7", only: [:test]},
       {:live_isolated_component, "~> 0.9.0", only: [:dev, :test]},
       {:ex_knigge, "~> 2.0.0-rc.0"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:tzdata, "~> 1.1"}
     ]
   end
 

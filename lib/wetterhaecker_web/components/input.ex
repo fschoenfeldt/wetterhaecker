@@ -23,6 +23,8 @@ defmodule WetterhaeckerWeb.Components.Input do
 
   attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  attr :timezone, :string, default: "UTC", doc: "IANA timezone name used for datetime-local display conversion"
+
   attr :class, :any, default: nil
 
   attr :rest, :global, include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -49,10 +51,10 @@ defmodule WetterhaeckerWeb.Components.Input do
     """
   end
 
-  defp normalize_value(%{type: type, value: value} = assigns) do
+  defp normalize_value(%{type: type, value: value, timezone: timezone} = assigns) do
     case type do
       "datetime-local" ->
-        Map.put(assigns, :value, date_time_to_input(value))
+        Map.put(assigns, :value, date_time_to_input(value, timezone))
 
       _ ->
         assigns
@@ -61,15 +63,14 @@ defmodule WetterhaeckerWeb.Components.Input do
 
   defp normalize_value(assigns), do: assigns
 
-  # workaround with fixed timezone
-  def date_time_from_input(value) do
-    {:ok, date, _offet_secs} = DateTime.from_iso8601("#{value}:00Z+02:00")
-
+  @doc """
+  Converts a UTC `DateTime` to an ISO 8601 string suitable for a `datetime-local` HTML input,
+  displayed in the given IANA timezone.
+  """
+  @spec date_time_to_input(DateTime.t(), String.t()) :: String.t()
+  def date_time_to_input(%DateTime{} = date, timezone \\ "UTC") do
     date
-  end
-
-  def date_time_to_input(%DateTime{} = date) do
-    date
+    |> Timex.Timezone.convert(timezone)
     |> DateTime.to_iso8601()
     |> String.slice(0..15//1)
   end

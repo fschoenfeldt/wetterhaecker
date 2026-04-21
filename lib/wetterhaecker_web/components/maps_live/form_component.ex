@@ -50,18 +50,18 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   attr :id, :string, required: true
   attr :form, :map, required: true, doc: "the form data in form of a `Form` struct"
   attr :gpx, :map, required: true, doc: "the GPX map in form of a `Wetterhaecker.Gpx.gpx_with_length`"
+  attr :user_timezone, :string, default: "UTC", doc: "IANA timezone name from the user's browser"
 
   @impl true
   def mount(socket) do
     # Initialize form with default values
     now = DateTime.utc_now()
-    two_hours_later = DateTime.add(now, 2, :hour)
 
     changeset =
       Form.changeset(%Form{}, %{
         "average_speed" => 20.0,
         "sampling_rate" => 20,
-        "start_date_time" => two_hours_later
+        "start_date_time" => now
       })
 
     socket =
@@ -118,10 +118,15 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
             Start Date/Time
           </.form_label>
           <.form_control>
-            <.input type="datetime-local" field={@form[:start_date_time]} required />
+            <.input
+              type="datetime-local"
+              field={@form[:start_date_time]}
+              required
+              timezone={@user_timezone}
+            />
           </.form_control>
           <.form_description>
-            The date and time when you start your route, timezone is MESZ (+02:00).
+            The date and time when you start your route (in your local timezone: {@user_timezone}).
           </.form_description>
         </.form_item>
         <div class="md:flex gap-x-4">
@@ -205,6 +210,9 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
   # and sends events to update the map and chart components.
   @impl true
   def handle_event("save", %{"form" => form_params}, socket) do
+    timezone = Map.get(socket.assigns, :user_timezone, "UTC")
+    form_params = adjust_start_datetime_to_utc(form_params, timezone)
+
     changeset =
       Form.changeset(%Form{}, form_params)
 
@@ -238,4 +246,27 @@ defmodule WetterhaeckerWeb.Components.MapsLive.FormComponent do
     end)
     |> List.first()
   end
+
+  # Interprets the "start_date_time" form value as a local time in the given timezone
+  # and converts it to a UTC ISO 8601 string so Ecto casts it correctly.
+  @spec adjust_start_datetime_to_utc(map(), String.t()) :: map()
+  defp adjust_start_datetime_to_utc(%{"start_date_time" => value} = params, timezone)
+       when is_binary(value) and byte_size(value) > 0 do
+    case NaiveDateTime.from_iso8601("#{value}:00") do
+      {:ok, naive_dt} ->
+        case DateTime.from_naive(naive_dt, timezone) do
+          {:ok, local_dt} ->
+            utc_dt = DateTime.shift_zone!(local_dt, "Etc/UTC")
+            Map.put(params, "start_date_time", utc_dt)
+
+          _ ->
+            params
+        end
+
+      _ ->
+        params
+    end
+  end
+
+  defp adjust_start_datetime_to_utc(params, _timezone), do: params
 end

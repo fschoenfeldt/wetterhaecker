@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+# Use tzdata as the time zone database for DateTime.from_naive/3
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
@@ -53,13 +56,12 @@ config :wetterhaecker, WetterhaeckerWeb.Endpoint,
   ],
   pubsub_server: Wetterhaecker.PubSub,
   live_view: [signing_salt: "kXbCSxmh"],
+  # Import environment specific config. This must remain at the bottom
+  # of this file so it overrides the configuration defined above.
   static_url: [path: "/wetterhaecker"]
 
 config :wetterhaecker,
   ecto_repos: [Wetterhaecker.Repo],
   generators: [timestamp_type: :utc_datetime]
-
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
 
 import_config "#{config_env()}.exs"

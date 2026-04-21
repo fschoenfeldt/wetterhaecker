@@ -18,12 +18,11 @@ export const drawHighChart = ({
       },
       title: {
         text: `Temperature forecast, starting at ${dateToLocalTimeString(
-          weatherPoints[0].date
+          weatherPoints[0].date,
         )}`,
       },
       xAxis: {
         categories: weatherPoints.map((point) => {
-          // Assume point.date is in MESZ (+02:00)
           const date = new Date(point.date);
 
           return dateToLocalTimeString(date);
@@ -156,7 +155,7 @@ export const drawHighChart = ({
     },
     // have to do this here, otherwise fn overload will not be detected.
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    () => {}
+    () => {},
   );
 };
 

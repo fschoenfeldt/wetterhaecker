@@ -10,11 +10,13 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    user_timezone = get_connect_params(socket)["timezone"] || "UTC"
+
     changeset =
       FormComponent.Form.changeset(%FormComponent.Form{}, %{
         "average_speed" => 20.0,
         "sampling_rate" => 20,
-        "start_date_time" => DateTime.utc_now() |> DateTime.add(2, :hour)
+        "start_date_time" => DateTime.utc_now()
       })
 
     # initially we use a preset GPX file
@@ -23,6 +25,7 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
     socket =
       socket
       |> assign(:gpx, gpx)
+      |> assign(:user_timezone, user_timezone)
       |> assign(
         :form,
         to_form(changeset)
@@ -56,7 +59,13 @@ defmodule WetterhaeckerWeb.MapsLive.Index do
         <.live_component module={ChartComponent} id="chart" />
       </div>
 
-      <.live_component module={FormComponent} id="form" form={@form} gpx={@gpx} />
+      <.live_component
+        module={FormComponent}
+        id="form"
+        form={@form}
+        gpx={@gpx}
+        user_timezone={@user_timezone}
+      />
     </div>
     """
   end
