@@ -46,28 +46,40 @@ function convertUtcToLocal(input: HTMLInputElement): void {
 }
 
 /**
- * Writes the browser's UTC offset in minutes into the hidden offset field.
+ * Writes the UTC offset in minutes for the currently selected local datetime
+ * into the hidden offset field.
  * Date.getTimezoneOffset() returns UTC − local in minutes (negative for UTC+ zones).
  */
-function updateOffsetField(): void {
+function updateOffsetField(input: HTMLInputElement): void {
   const offsetInput = document.getElementById(
     "form_timezone_offset"
   ) as HTMLInputElement | null;
-  if (offsetInput) {
-    offsetInput.value = String(new Date().getTimezoneOffset());
-  }
+
+  if (!offsetInput) return;
+
+  const selectedDate = input.value ? new Date(input.value) : new Date();
+  const offset =
+    !isNaN(selectedDate.getTime())
+      ? selectedDate.getTimezoneOffset()
+      : new Date().getTimezoneOffset();
+
+  offsetInput.value = String(offset);
 }
 
 const datetimeLocalHook: DatetimeLocalHook = {
   mounted(this: DatetimeLocalHookInterface) {
-    updateOffsetField();
     convertUtcToLocal(this.el);
+    updateOffsetField(this.el);
+
+    this.el.addEventListener("input", () => updateOffsetField(this.el));
+    this.el.addEventListener("change", () => updateOffsetField(this.el));
   },
 
   updated(this: DatetimeLocalHookInterface) {
     // Re-convert whenever the server pushes a new UTC value (e.g. after a
     // successful form submission that re-renders the field).
     convertUtcToLocal(this.el);
+    updateOffsetField(this.el);
   },
 };
 
